@@ -11,15 +11,15 @@ import time
 from datetime import datetime
 import sys
 
-# Configuración de buscadores (id y cabecera)
+# Configuración de buscadores (id y cabecera) - IDs CORRECTOS
 BUSCADORES = {
     "Corte_Suprema": ("528", "Buscador_Jurisprudencial_de_la_Corte_Suprema"),
-    "Corte_de_Apelaciones": ("529", "Buscador_Jurisprudencial_de_Cortes_de_Apelaciones"),
-    "Laborales": ("530", "Buscador_Jurisprudencial_de_Tribunales_Laborales"),
-    "Penales": ("531", "Buscador_Jurisprudencial_de_Tribunales_Penales"),
-    "Familia": ("532", "Buscador_Jurisprudencial_de_Tribunales_de_Familia"),
-    "Civiles": ("533", "Buscador_Jurisprudencial_de_Tribunales_Civiles"),
-    "Cobranza": ("534", "Buscador_Jurisprudencial_de_Tribunales_de_Cobranza"),
+    "Corte_de_Apelaciones": ("168", "Buscador_Jurisprudencial_de_Cortes_de_Apelaciones"),
+    "Laborales": ("271", "Buscador_Jurisprudencial_de_Tribunales_Laborales"),
+    "Penales": ("268", "Buscador_Jurisprudencial_de_Tribunales_Penales"),
+    "Familia": ("270", "Buscador_Jurisprudencial_de_Tribunales_de_Familia"),
+    "Civiles": ("328", "Buscador_Jurisprudencial_de_Tribunales_Civiles"),
+    "Cobranza": ("269", "Buscador_Jurisprudencial_de_Tribunales_de_Cobranza"),
 }
 
 def obtener_token(session):

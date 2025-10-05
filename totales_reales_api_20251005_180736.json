@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-10-05T18:07:36.115802",
+  "totales_por_tribunal": {
+    "Corte_Suprema": 261871,
+    "Corte_de_Apelaciones": 0,
+    "Laborales": 0,
+    "Penales": 0,
+    "Familia": 0,
+    "Civiles": 0,
+    "Cobranza": 0
+  },
+  "total_general": 261871,
+  "fuente": "API oficial PJUD (juris.pjud.cl)",
+  "metodo": "Consulta directa usando endpoints reales",
+  "ip_origen": "Local",
+  "confiabilidad": "Alta - Datos obtenidos directamente de la API",
+  "endpoints_utilizados": [
+    "https://juris.pjud.cl/ (token CSRF)",
+    "https://juris.pjud.cl/busqueda (contexto)",
+    "https://juris.pjud.cl/busqueda/buscar_sentencias (consulta)"
+  ]
+}
