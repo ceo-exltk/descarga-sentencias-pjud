@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-10-05T13:29:44.331525",
+  "total_descargadas": 26001,
+  "total_estimado": 2410620,
+  "completitud_general": 1.1,
+  "tribunales": {
+    "Corte Suprema": {
+      "descargadas": 0,
+      "total_estimado": 26150,
+      "completitud": 0.0,
+      "icono": "🏛️",
+      "descripcion": "Corte Suprema de Chile"
+    },
+    "Corte de Apelaciones": {
+      "descargadas": 0,
+      "total_estimado": 1509890,
+      "completitud": 0.0,
+      "icono": "⚖️",
+      "descripcion": "Cortes de Apelaciones"
+    },
+    "Laborales": {
+      "descargadas": 0,
+      "total_estimado": 173960,
+      "completitud": 0.0,
+      "icono": "💼",
+      "descripcion": "Tribunales Laborales"
+    },
+    "Penales": {
+      "descargadas": 0,
+      "total_estimado": 228010,
+      "completitud": 0.0,
+      "icono": "⚖️",
+      "descripcion": "Tribunales Penales"
+    },
+    "Familia": {
+      "descargadas": 0,
+      "total_estimado": 113350,
+      "completitud": 0.0,
+      "icono": "👨‍👩‍👧‍👦",
+      "descripcion": "Tribunales de Familia"
+    },
+    "Civiles": {
+      "descargadas": 0,
+      "total_estimado": 333130,
+      "completitud": 0.0,
+      "icono": "📋",
+      "descripcion": "Tribunales Civiles"
+    },
+    "Cobranza": {
+      "descargadas": 0,
+      "total_estimado": 26130,
+      "completitud": 0.0,
+      "icono": "💰",
+      "descripcion": "Tribunales de Cobranza"
+    }
+  },
+  "ultima_actualizacion": "2025-10-05 13:29:44",
+  "fuente": "Supabase + Estimaciones basadas en análisis previo"
+}
