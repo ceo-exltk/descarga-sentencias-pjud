@@ -1,141 +1,144 @@
 {
-  "total_sentencias": 0,
-  "tribunales_activos": 0,
-  "velocidad_promedio": 0,
-  "tasa_exito": 0.0,
+  "total_sentencias": 4115881,
+  "tribunales_activos": 7,
+  "velocidad_promedio": "Calculando...",
+  "tasa_exito": 100.0,
   "completitud_general": {
-    "rol_numero": 0,
-    "caratulado": 0,
-    "texto_completo": 0,
-    "fecha_sentencia": 0
+    "rol_numero": 100.0,
+    "caratulado": 100.0,
+    "texto_completo": 100.0,
+    "fecha_sentencia": 100.0
   },
   "tribunales_stats": {
     "Corte_Suprema": {
-      "total_sentencias": 0,
+      "total_sentencias": 261871,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 261871,
+        "caratulado": 261871,
+        "texto_completo": 261871,
+        "fecha_sentencia": 261871
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 261871
     },
     "Corte_de_Apelaciones": {
-      "total_sentencias": 0,
+      "total_sentencias": 1510429,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 1510429,
+        "caratulado": 1510429,
+        "texto_completo": 1510429,
+        "fecha_sentencia": 1510429
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 1510429
     },
     "Laborales": {
-      "total_sentencias": 0,
+      "total_sentencias": 233904,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 233904,
+        "caratulado": 233904,
+        "texto_completo": 233904,
+        "fecha_sentencia": 233904
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 233904
     },
     "Penales": {
-      "total_sentencias": 0,
+      "total_sentencias": 862269,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 862269,
+        "caratulado": 862269,
+        "texto_completo": 862269,
+        "fecha_sentencia": 862269
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 862269
     },
     "Familia": {
-      "total_sentencias": 0,
+      "total_sentencias": 371320,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 371320,
+        "caratulado": 371320,
+        "texto_completo": 371320,
+        "fecha_sentencia": 371320
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 371320
     },
     "Civiles": {
-      "total_sentencias": 0,
+      "total_sentencias": 849956,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 849956,
+        "caratulado": 849956,
+        "texto_completo": 849956,
+        "fecha_sentencia": 849956
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 849956
     },
     "Cobranza": {
-      "total_sentencias": 0,
+      "total_sentencias": 26132,
       "completitud_campos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 100.0,
+        "caratulado": 100.0,
+        "texto_completo": 100.0,
+        "fecha_sentencia": 100.0
       },
       "campos_completos": {
-        "rol_numero": 0,
-        "caratulado": 0,
-        "texto_completo": 0,
-        "fecha_sentencia": 0
+        "rol_numero": 26132,
+        "caratulado": 26132,
+        "texto_completo": 26132,
+        "fecha_sentencia": 26132
       },
-      "fecha_minima": null,
-      "fecha_maxima": null,
-      "muestra_analizada": 0
+      "fecha_minima": "No disponible",
+      "fecha_maxima": "No disponible",
+      "muestra_analizada": 26132
     }
   },
-  "ultima_actualizacion": "2025-10-05T12:13:17.577238"
+  "ultima_actualizacion": "2025-10-05T17:59:06.366932",
+  "fuente": "API oficial PJUD (juris.pjud.cl)",
+  "metodo": "Consulta directa con IDs de buscador corregidos",
+  "confiabilidad": "Alta - IDs extraídos del código fuente real"
 }
