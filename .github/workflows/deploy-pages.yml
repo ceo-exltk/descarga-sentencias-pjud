@@ -5,20 +5,8 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout
@@ -49,7 +37,17 @@ jobs:
             exit 1
           fi
           
-      - name: 🚀 Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-        with:
-          path: docs
+      - name: 📤 Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add docs/dashboard_data.json
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️ No hay cambios para commitear"
+          else
+            git commit -m "🤖 Auto-update dashboard data - $(date '+%Y-%m-%d %H:%M:%S')"
+            git push origin main
+            echo "✅ Dashboard data updated"
+          fi
