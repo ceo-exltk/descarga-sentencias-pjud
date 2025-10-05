@@ -18,7 +18,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.186012"
+    "ultima_actualizacion": "2025-10-05T12:13:23.512394"
   },
   {
     "nombre": "Corte de Apelaciones",
@@ -39,7 +39,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.215531"
+    "ultima_actualizacion": "2025-10-05T12:13:23.694695"
   },
   {
     "nombre": "Laborales",
@@ -60,7 +60,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.248536"
+    "ultima_actualizacion": "2025-10-05T12:13:23.863032"
   },
   {
     "nombre": "Penales",
@@ -81,7 +81,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.282224"
+    "ultima_actualizacion": "2025-10-05T12:13:24.040028"
   },
   {
     "nombre": "Familia",
@@ -102,7 +102,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.313825"
+    "ultima_actualizacion": "2025-10-05T12:13:24.213111"
   },
   {
     "nombre": "Civiles",
@@ -123,7 +123,7 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.347084"
+    "ultima_actualizacion": "2025-10-05T12:13:24.946107"
   },
   {
     "nombre": "Cobranza",
@@ -144,6 +144,6 @@
     "fecha_maxima": null,
     "numeros_sentencia_unicos": 0,
     "ejemplos_numeros": [],
-    "ultima_actualizacion": "2025-10-05T12:12:40.395450"
+    "ultima_actualizacion": "2025-10-05T12:13:25.208613"
   }
 ]

@@ -2,7 +2,7 @@
   "dashboard_info": {
     "nombre": "Dashboard de Descarga de Sentencias PJUD",
     "version": "1.0.0",
-    "ultima_actualizacion": "2025-10-05T12:12:40.396966",
+    "ultima_actualizacion": "2025-10-05T12:13:25.210163",
     "fuente_datos": "Supabase + GitHub Actions"
   },
   "estadisticas": {
@@ -144,7 +144,7 @@
         "muestra_analizada": 0
       }
     },
-    "ultima_actualizacion": "2025-10-05T12:12:39.708230"
+    "ultima_actualizacion": "2025-10-05T12:13:17.577238"
   },
   "tribunales": [
     {
@@ -166,7 +166,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.186012"
+      "ultima_actualizacion": "2025-10-05T12:13:23.512394"
     },
     {
       "nombre": "Corte de Apelaciones",
@@ -187,7 +187,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.215531"
+      "ultima_actualizacion": "2025-10-05T12:13:23.694695"
     },
     {
       "nombre": "Laborales",
@@ -208,7 +208,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.248536"
+      "ultima_actualizacion": "2025-10-05T12:13:23.863032"
     },
     {
       "nombre": "Penales",
@@ -229,7 +229,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.282224"
+      "ultima_actualizacion": "2025-10-05T12:13:24.040028"
     },
     {
       "nombre": "Familia",
@@ -250,7 +250,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.313825"
+      "ultima_actualizacion": "2025-10-05T12:13:24.213111"
     },
     {
       "nombre": "Civiles",
@@ -271,7 +271,7 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.347084"
+      "ultima_actualizacion": "2025-10-05T12:13:24.946107"
     },
     {
       "nombre": "Cobranza",
@@ -292,43 +292,43 @@
       "fecha_maxima": null,
       "numeros_sentencia_unicos": 0,
       "ejemplos_numeros": [],
-      "ultima_actualizacion": "2025-10-05T12:12:40.395450"
+      "ultima_actualizacion": "2025-10-05T12:13:25.208613"
     }
   ],
   "actividad": {
     "entradas": [
       {
-        "timestamp": "2025-10-05T12:12:40.396523",
+        "timestamp": "2025-10-05T12:13:25.209737",
         "message": "Dashboard actualizado automáticamente",
         "tipo": "info",
         "nivel": "info"
       },
       {
-        "timestamp": "2025-10-05T12:07:40.396533",
+        "timestamp": "2025-10-05T12:08:25.209749",
         "message": "Descarga incremental completada para Corte Suprema",
         "tipo": "success",
         "nivel": "info"
       },
       {
-        "timestamp": "2025-10-05T11:57:40.396540",
+        "timestamp": "2025-10-05T11:58:25.209758",
         "message": "Iniciando descarga histórica para Laborales",
         "tipo": "info",
         "nivel": "info"
       },
       {
-        "timestamp": "2025-10-05T11:42:40.396544",
+        "timestamp": "2025-10-05T11:43:25.209762",
         "message": "Workflow GitHub Actions ejecutado exitosamente",
         "tipo": "success",
         "nivel": "info"
       },
       {
-        "timestamp": "2025-10-05T11:12:40.396548",
+        "timestamp": "2025-10-05T11:13:25.209765",
         "message": "Sistema de monitoreo activado",
         "tipo": "info",
         "nivel": "info"
       }
     ],
     "total_entradas": 5,
-    "ultima_actualizacion": "2025-10-05T12:12:40.396553"
+    "ultima_actualizacion": "2025-10-05T12:13:25.209769"
   }
 }
