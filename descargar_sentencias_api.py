@@ -25,8 +25,10 @@ BUSCADORES = {
 }
 
 class DescargadorSentencias:
-    def __init__(self, output_dir="output/descarga_api"):
+    def __init__(self, output_dir="output/descarga_api", fecha_desde=None, fecha_hasta=None):
         self.output_dir = output_dir
+        self.fecha_desde = fecha_desde
+        self.fecha_hasta = fecha_hasta
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -38,7 +40,11 @@ class DescargadorSentencias:
             "total_descargado": 0,
             "total_errores": 0,
             "tribunales_completados": 0,
-            "tribunales_totales": len(BUSCADORES)
+            "tribunales_totales": len(BUSCADORES),
+            "filtros_fecha": {
+                "fecha_desde": fecha_desde,
+                "fecha_hasta": fecha_hasta
+            }
         }
         
         # Crear directorio de salida
@@ -85,13 +91,18 @@ class DescargadorSentencias:
             "Referer": f"https://juris.pjud.cl/busqueda?{nombre_tribunal}",
         }
         
-        filtros_json = json.dumps({
-            "rol": "", "era": "", "fec_desde": "", "fec_hasta": "", "tipo_norma": "",
-            "num_norma": "", "num_art": "", "num_inciso": "", "todas": "", "algunas": "",
-            "excluir": "", "literal": "", "proximidad": "", "distancia": "",
-            "analisis_s": "", "submaterias": "", "facetas_seleccionadas": [],
-            "filtros_omnibox": [], "ids_comunas_seleccionadas_mapa": []
-        })
+        # Construir filtros con fechas si están definidas
+        filtros = {
+            "rol": "", "era": "", 
+            "fec_desde": self.fecha_desde or "", 
+            "fec_hasta": self.fecha_hasta or "", 
+            "tipo_norma": "", "num_norma": "", "num_art": "", "num_inciso": "", 
+            "todas": "", "algunas": "", "excluir": "", "literal": "", 
+            "proximidad": "", "distancia": "", "analisis_s": "", "submaterias": "", 
+            "facetas_seleccionadas": [], "filtros_omnibox": [], "ids_comunas_seleccionadas_mapa": []
+        }
+        
+        filtros_json = json.dumps(filtros)
 
         payload = {
             "_token": self.token,
@@ -152,13 +163,18 @@ class DescargadorSentencias:
             "Referer": f"https://juris.pjud.cl/busqueda?{nombre_tribunal}",
         }
         
-        filtros_json = json.dumps({
-            "rol": "", "era": "", "fec_desde": "", "fec_hasta": "", "tipo_norma": "",
-            "num_norma": "", "num_art": "", "num_inciso": "", "todas": "", "algunas": "",
-            "excluir": "", "literal": "", "proximidad": "", "distancia": "",
-            "analisis_s": "", "submaterias": "", "facetas_seleccionadas": [],
-            "filtros_omnibox": [], "ids_comunas_seleccionadas_mapa": []
-        })
+        # Construir filtros con fechas si están definidas
+        filtros = {
+            "rol": "", "era": "", 
+            "fec_desde": self.fecha_desde or "", 
+            "fec_hasta": self.fecha_hasta or "", 
+            "tipo_norma": "", "num_norma": "", "num_art": "", "num_inciso": "", 
+            "todas": "", "algunas": "", "excluir": "", "literal": "", 
+            "proximidad": "", "distancia": "", "analisis_s": "", "submaterias": "", 
+            "facetas_seleccionadas": [], "filtros_omnibox": [], "ids_comunas_seleccionadas_mapa": []
+        }
+        
+        filtros_json = json.dumps(filtros)
 
         while sentencias_descargadas < total:
             try:
@@ -302,8 +318,27 @@ def main():
     limite_por_tribunal = None  # None = sin límite, o poner número como 1000
     max_workers = 3  # Número de tribunales a procesar en paralelo
     
-    # Crear descargador
-    descargador = DescargadorSentencias()
+    # Parámetros de fecha (opcionales)
+    fecha_desde = None  # Formato: "2024-01-01"
+    fecha_hasta = None  # Formato: "2024-12-31"
+    
+    # Verificar argumentos de línea de comandos para fechas
+    if len(sys.argv) >= 3:
+        fecha_desde = sys.argv[1]
+        fecha_hasta = sys.argv[2]
+        print(f"📅 Filtros por fecha activados:")
+        print(f"   Desde: {fecha_desde}")
+        print(f"   Hasta: {fecha_hasta}")
+    else:
+        print("💡 Para filtrar por fecha, usa: python3 descargar_sentencias_api.py YYYY-MM-DD YYYY-MM-DD")
+        print("📅 Descargando todas las sentencias (sin filtro de fecha)")
+    
+    # Crear descargador con filtros de fecha
+    descargador = DescargadorSentencias(
+        output_dir="output/descarga_api",
+        fecha_desde=fecha_desde,
+        fecha_hasta=fecha_hasta
+    )
     
     # Iniciar descarga
     try:
