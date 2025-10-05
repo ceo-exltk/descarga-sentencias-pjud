@@ -1,0 +1,61 @@
+name: "Descargar Sentencias por Día"
+
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha a descargar (YYYY-MM-DD)'
+        required: true
+        default: '2024-01-15'
+
+jobs:
+  descargar-sentencias:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: pip install requests
+      
+      - name: Descargar sentencias del día
+        run: |
+          echo "📅 Descargando sentencias del día: ${{ github.event.inputs.fecha }}"
+          python3 descargar_sentencias_api.py ${{ github.event.inputs.fecha }} ${{ github.event.inputs.fecha }}
+      
+      - name: Preparar archivos para Supabase
+        run: |
+          echo "🔄 Preparando archivos para ingesta en Supabase..."
+          python3 preparar_para_supabase.py output/descarga_api
+      
+      - name: Crear archivo de resumen
+        run: |
+          echo "📊 Creando resumen de descarga..."
+          echo "Fecha: ${{ github.event.inputs.fecha }}" > descarga_resumen.txt
+          echo "Timestamp: $(date)" >> descarga_resumen.txt
+          echo "Archivos generados:" >> descarga_resumen.txt
+          find output/ -name "*.json" | wc -l >> descarga_resumen.txt
+          echo "Total de archivos JSON generados" >> descarga_resumen.txt
+      
+      - name: Upload archivos para Supabase
+        uses: actions/upload-artifact@v3
+        with:
+          name: sentencias-${{ github.event.inputs.fecha }}
+          path: |
+            output/
+            descarga_resumen.txt
+          retention-days: 30
+      
+      - name: Mostrar resumen
+        run: |
+          echo "✅ Descarga completada para el día: ${{ github.event.inputs.fecha }}"
+          echo "📁 Archivos disponibles para ingesta en Supabase:"
+          find output/ -name "*.json" | head -10
+          echo "..."
+          echo "📊 Total de archivos: $(find output/ -name "*.json" | wc -l)"
