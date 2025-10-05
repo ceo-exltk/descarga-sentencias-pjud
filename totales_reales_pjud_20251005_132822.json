@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-10-05T13:28:22.030446",
+  "totales_por_tribunal": {
+    "Corte_Suprema": 0,
+    "Corte_de_Apelaciones": 0,
+    "Laborales": 0,
+    "Penales": 0,
+    "Familia": 0,
+    "Civiles": 0,
+    "Cobranza": 0
+  },
+  "total_general": 0,
+  "fuente": "API oficial PJUD (juris.pjud.cl)",
+  "metodo": "Consulta directa usando lógica del worker funcional"
+}

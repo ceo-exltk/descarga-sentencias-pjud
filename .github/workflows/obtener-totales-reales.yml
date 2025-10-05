@@ -1,0 +1,116 @@
+name: 🔍 Obtener Totales Reales PJUD
+
+on:
+  workflow_dispatch:  # Permite ejecución manual
+  schedule:
+    - cron: '0 6 * * *'  # Ejecutar diariamente a las 6 AM UTC
+  push:
+    paths:
+      - 'scripts/cloud/obtener_totales_reales_cloud.py'
+
+jobs:
+  obtener-totales:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 📦 Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: 🔍 Obtener totales reales del PJUD
+      run: |
+        echo "🚀 INICIANDO CONSULTA DE TOTALES REALES"
+        echo "======================================"
+        echo "⏰ Timestamp: $(date)"
+        echo "🌍 IP del runner: $(curl -s https://httpbin.org/ip | jq -r '.origin')"
+        echo ""
+        
+        python scripts/cloud/obtener_totales_reales_cloud.py
+        
+    - name: 📊 Procesar resultados
+      run: |
+        echo "📊 PROCESANDO RESULTADOS"
+        echo "======================="
+        
+        # Buscar el archivo más reciente de totales
+        LATEST_FILE=$(ls -t totales_reales_cloud_*.json | head -n 1)
+        
+        if [ -f "$LATEST_FILE" ]; then
+          echo "✅ Archivo encontrado: $LATEST_FILE"
+          
+          # Mostrar resumen
+          echo ""
+          echo "📈 RESUMEN DE TOTALES:"
+          echo "====================="
+          jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tonumber | .[0:])"' "$LATEST_FILE"
+          
+          TOTAL_GENERAL=$(jq -r '.total_general' "$LATEST_FILE")
+          echo "Total General: $TOTAL_GENERAL"
+          
+        else
+          echo "❌ No se encontró archivo de resultados"
+          exit 1
+        fi
+        
+    - name: 📤 Subir resultados a GitHub Pages
+      run: |
+        echo "📤 SUBIENDO RESULTADOS A GITHUB PAGES"
+        echo "===================================="
+        
+        # Configurar git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Cambiar a rama gh-pages
+        git checkout gh-pages
+        
+        # Copiar archivos de resultados
+        cp totales_reales_cloud_*.json . 2>/dev/null || true
+        
+        # Crear archivo de resumen para el dashboard
+        LATEST_FILE=$(ls -t totales_reales_cloud_*.json | head -n 1)
+        if [ -f "$LATEST_FILE" ]; then
+          echo "📊 Creando resumen para dashboard..."
+          
+          # Crear archivo de resumen simplificado
+          jq '{
+            timestamp: .timestamp,
+            total_general: .total_general,
+            tribunales: .totales_por_tribunal,
+            fuente: "API oficial PJUD desde GitHub Actions",
+            ip_origen: .ip_origen
+          }' "$LATEST_FILE" > totales_reales_dashboard.json
+          
+          echo "✅ Resumen creado: totales_reales_dashboard.json"
+        fi
+        
+        # Commit y push
+        git add .
+        git commit -m "📊 Actualizar totales reales del PJUD - $(date)" || echo "No hay cambios para commit"
+        git push origin gh-pages
+        
+        echo "✅ Resultados subidos a GitHub Pages"
+        
+    - name: 📊 Mostrar resumen final
+      run: |
+        echo ""
+        echo "🎉 PROCESO COMPLETADO"
+        echo "===================="
+        echo "✅ Totales reales obtenidos desde GitHub Actions"
+        echo "✅ Resultados subidos a GitHub Pages"
+        echo "✅ Dashboard actualizado con datos reales"
+        echo ""
+        echo "🌐 Dashboard disponible en:"
+        echo "https://ceo-exltk.github.io/descarga-sentencias-pjud/dashboard_tribunales_final.html"
+        echo ""
+        echo "📊 Archivos generados:"
+        ls -la totales_reales_*.json

@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-10-05T13:04:50.061937",
+  "totales_por_tribunal": {
+    "Corte Suprema": 0,
+    "Corte de Apelaciones": 0,
+    "Laborales": 0,
+    "Familia": 0,
+    "Civiles": 0,
+    "Penales": 0,
+    "Cobranza": 0,
+    "Salud CS": 0
+  },
+  "total_general": 0,
+  "fuente": "API oficial PJUD (juris.pjud.cl)"
+}
