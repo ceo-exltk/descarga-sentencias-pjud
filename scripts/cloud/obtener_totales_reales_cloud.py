@@ -208,8 +208,16 @@ def main():
     """Función principal"""
     print("☁️ CONSULTANDO TOTALES REALES DESDE GITHUB ACTIONS")
     print("=" * 60)
+    
+    # Obtener IP una sola vez
+    try:
+        ip_response = requests.get('https://httpbin.org/ip', timeout=10)
+        ip_origen = ip_response.json().get('origin', 'Unknown')
+    except:
+        ip_origen = 'Unknown'
+    
     print(f"⏰ Iniciado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"🌍 IP: {requests.get('https://httpbin.org/ip').json().get('origin', 'Unknown')}")
+    print(f"🌍 IP: {ip_origen}")
     print()
     
     try:
@@ -220,15 +228,18 @@ def main():
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"totales_reales_cloud_{timestamp}.json"
         
+        # Crear estructura JSON válida
+        json_data = {
+            'timestamp': datetime.now().isoformat(),
+            'totales_por_tribunal': resultados,
+            'total_general': sum(resultados.values()) if resultados else 0,
+            'fuente': 'API oficial PJUD (juris.pjud.cl)',
+            'metodo': 'Consulta desde GitHub Actions (IP dinámica)',
+            'ip_origen': ip_origen
+        }
+        
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump({
-                'timestamp': datetime.now().isoformat(),
-                'totales_por_tribunal': resultados,
-                'total_general': sum(resultados.values()),
-                'fuente': 'API oficial PJUD (juris.pjud.cl)',
-                'metodo': 'Consulta desde GitHub Actions (IP dinámica)',
-                'ip_origen': requests.get('https://httpbin.org/ip').json().get('origin', 'Unknown')
-            }, f, indent=2, ensure_ascii=False)
+            json.dump(json_data, f, indent=2, ensure_ascii=False)
         
         print(f"\n💾 Resultados guardados en: {filename}")
         print("✅ Consulta completada exitosamente desde cloud")

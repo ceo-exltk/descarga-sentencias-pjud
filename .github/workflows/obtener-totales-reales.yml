@@ -26,23 +26,33 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
         
-    - name: 🔍 Obtener totales reales del PJUD
+    - name: 🔍 Obtener totales del PJUD (reales o estimados)
       run: |
-        echo "🚀 INICIANDO CONSULTA DE TOTALES REALES"
-        echo "======================================"
+        echo "🚀 INICIANDO CONSULTA DE TOTALES"
+        echo "=================================="
         echo "⏰ Timestamp: $(date)"
         echo "🌍 IP del runner: $(curl -s https://httpbin.org/ip | jq -r '.origin')"
         echo ""
         
+        # Intentar obtener totales reales primero
+        echo "🔍 Intentando obtener totales reales de la API..."
         python scripts/cloud/obtener_totales_reales_cloud.py
+        
+        # Si falla, usar estimaciones históricas
+        if [ $? -ne 0 ] || [ ! -f totales_reales_cloud_*.json ]; then
+          echo ""
+          echo "⚠️ API del PJUD bloqueada - Usando estimaciones históricas"
+          echo "📊 Generando totales basados en análisis de patrones..."
+          python scripts/cloud/obtener_totales_estimados.py
+        fi
         
     - name: 📊 Procesar resultados
       run: |
         echo "📊 PROCESANDO RESULTADOS"
         echo "======================="
         
-        # Buscar el archivo más reciente de totales
-        LATEST_FILE=$(ls -t totales_reales_cloud_*.json | head -n 1)
+        # Buscar el archivo más reciente de totales (reales o estimados)
+        LATEST_FILE=$(ls -t totales_*_cloud_*.json 2>/dev/null | head -n 1)
         
         if [ -f "$LATEST_FILE" ]; then
           echo "✅ Archivo encontrado: $LATEST_FILE"
@@ -51,7 +61,15 @@ jobs:
           echo ""
           echo "📈 RESUMEN DE TOTALES:"
           echo "====================="
-          jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tonumber | .[0:])"' "$LATEST_FILE"
+          
+          # Verificar si es archivo de estimaciones o reales
+          if [[ "$LATEST_FILE" == *"estimados"* ]]; then
+            echo "📊 Usando estimaciones históricas (API bloqueada)"
+            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value)"' "$LATEST_FILE"
+          else
+            echo "🔍 Usando totales reales de la API"
+            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value)"' "$LATEST_FILE"
+          fi
           
           TOTAL_GENERAL=$(jq -r '.total_general' "$LATEST_FILE")
           echo "Total General: $TOTAL_GENERAL"
