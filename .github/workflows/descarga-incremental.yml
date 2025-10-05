@@ -1,0 +1,123 @@
+name: Descarga Incremental de Sentencias
+
+on:
+  # Disparar manualmente con parámetros
+  workflow_dispatch:
+    inputs:
+      tribunal_type:
+        description: 'Tipo de tribunal'
+        required: true
+        default: 'Corte_Suprema'
+        type: choice
+        options:
+          - Corte_Suprema
+          - Corte_de_Apelaciones
+          - Laborales
+          - Penales
+          - Familia
+          - Civiles
+          - Cobranza
+      fecha_desde:
+        description: 'Fecha desde (YYYY-MM-DD)'
+        required: true
+        default: '2024-01-01'
+        type: string
+      fecha_hasta:
+        description: 'Fecha hasta (YYYY-MM-DD)'
+        required: true
+        default: '2024-12-31'
+        type: string
+      paginas_maximas:
+        description: 'Páginas máximas a procesar'
+        required: true
+        default: '10'
+        type: string
+      workers_paralelos:
+        description: 'Workers paralelos'
+        required: true
+        default: '3'
+        type: string
+  
+  # Disparar automáticamente cada 6 horas
+  schedule:
+    - cron: '0 */6 * * *'
+  
+  # Disparar en push a main (para testing)
+  push:
+    branches: [ main ]
+    paths: [ 'scripts/cloud/**' ]
+
+jobs:
+  descarga-incremental:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+    
+    - name: Ejecutar descarga incremental
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        TRIBUNAL_TYPE: ${{ inputs.tribunal_type || 'Corte_Suprema' }}
+        FECHA_DESDE: ${{ inputs.fecha_desde || '2024-01-01' }}
+        FECHA_HASTA: ${{ inputs.fecha_hasta || '2024-12-31' }}
+        PAGINAS_MAXIMAS: ${{ inputs.paginas_maximas || '10' }}
+        WORKERS_PARALELOS: ${{ inputs.workers_paralelos || '3' }}
+      run: |
+        python scripts/cloud/descarga_cloud_incremental.py
+    
+    - name: Subir logs (si hay errores)
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs-error-${{ github.run_number }}
+        path: |
+          logs/
+          *.log
+        retention-days: 30
+
+  # Job para descarga masiva histórica (solo manual)
+  descarga-historica:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.tribunal_type
+    
+    strategy:
+      matrix:
+        tribunal: [Corte_Suprema, Corte_de_Apelaciones, Laborales, Penales, Familia, Civiles, Cobranza]
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+    
+    - name: Ejecutar descarga histórica
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        TRIBUNAL_TYPE: ${{ matrix.tribunal }}
+        FECHA_DESDE: '2000-01-01'
+        FECHA_HASTA: '2024-12-31'
+        PAGINAS_MAXIMAS: '100'
+        WORKERS_PARALELOS: '5'
+      run: |
+        python scripts/cloud/descarga_cloud_incremental.py
