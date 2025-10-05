@@ -44,7 +44,7 @@ jobs:
           echo "Total de archivos JSON generados" >> descarga_resumen.txt
       
       - name: Upload resultados
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sentencias-${{ github.event.inputs.fecha }}
           path: |
