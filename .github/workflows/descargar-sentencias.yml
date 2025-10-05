@@ -9,7 +9,7 @@ on:
         default: '2024-01-15'
 
 jobs:
-  descargar-sentencias:
+  descargar:
     runs-on: ubuntu-latest
     
     steps:
@@ -34,7 +34,7 @@ jobs:
           echo "🔄 Preparando archivos para ingesta en Supabase..."
           python3 preparar_para_supabase.py output/descarga_api
       
-      - name: Crear archivo de resumen
+      - name: Crear resumen
         run: |
           echo "📊 Creando resumen de descarga..."
           echo "Fecha: ${{ github.event.inputs.fecha }}" > descarga_resumen.txt
@@ -43,7 +43,7 @@ jobs:
           find output/ -name "*.json" | wc -l >> descarga_resumen.txt
           echo "Total de archivos JSON generados" >> descarga_resumen.txt
       
-      - name: Upload archivos para Supabase
+      - name: Upload resultados
         uses: actions/upload-artifact@v3
         with:
           name: sentencias-${{ github.event.inputs.fecha }}
@@ -52,7 +52,7 @@ jobs:
             descarga_resumen.txt
           retention-days: 30
       
-      - name: Mostrar resumen
+      - name: Mostrar resumen final
         run: |
           echo "✅ Descarga completada para el día: ${{ github.event.inputs.fecha }}"
           echo "📁 Archivos disponibles para ingesta en Supabase:"
