@@ -65,10 +65,10 @@ jobs:
           # Verificar si es archivo de estimaciones o reales
           if [[ "$LATEST_FILE" == *"estimados"* ]]; then
             echo "📊 Usando estimaciones históricas (API bloqueada)"
-            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value)"' "$LATEST_FILE"
+            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tostring)"' "$LATEST_FILE"
           else
             echo "🔍 Usando totales reales de la API"
-            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value)"' "$LATEST_FILE"
+            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tostring)"' "$LATEST_FILE"
           fi
           
           TOTAL_GENERAL=$(jq -r '.total_general' "$LATEST_FILE")
