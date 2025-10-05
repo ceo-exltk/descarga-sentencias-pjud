@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-10-05T18:13:17.381472",
+  "resumen": {
+    "total_real": 4115881,
+    "total_descargado": 0,
+    "total_pendiente": 4115881,
+    "completitud_general": 0.0
+  },
+  "tribunales": {
+    "Corte_Suprema": {
+      "total_real": 261871,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 261871
+    },
+    "Corte_de_Apelaciones": {
+      "total_real": 1510429,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 1510429
+    },
+    "Laborales": {
+      "total_real": 233904,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 233904
+    },
+    "Penales": {
+      "total_real": 862269,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 862269
+    },
+    "Familia": {
+      "total_real": 371320,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 371320
+    },
+    "Civiles": {
+      "total_real": 849956,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 849956
+    },
+    "Cobranza": {
+      "total_real": 26132,
+      "descargado": 0,
+      "porcentaje": 0.0,
+      "pendiente": 26132
+    }
+  },
+  "fuente": "API oficial PJUD + Supabase",
+  "metodo": "Ejecución paralela de requests"
+}

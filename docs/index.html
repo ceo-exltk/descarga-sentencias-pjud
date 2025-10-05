@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Dashboard - Total de Sentencias por Tribunal</title>
+    <title>📊 Dashboard de Completitud - Sentencias PJUD</title>
     <style>
         * {
             margin: 0;
@@ -44,30 +44,45 @@
             font-size: 1.2em;
         }
         
-        .total-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
         
-        .total-number {
-            font-size: 4em;
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
             font-weight: bold;
-            color: #3498db;
             margin-bottom: 10px;
         }
         
-        .total-label {
+        .stat-label {
             color: #7f8c8d;
-            font-size: 1.3em;
+            font-size: 1.1em;
         }
+        
+        .total-real { color: #3498db; }
+        .total-descargado { color: #2ecc71; }
+        .total-pendiente { color: #e74c3c; }
+        .completitud { color: #f39c12; }
         
         .tribunales-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -81,11 +96,11 @@
         }
         
         .tribunal-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
         }
         
         .tribunal-name {
-            font-size: 1.4em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 15px;
@@ -94,26 +109,51 @@
             gap: 10px;
         }
         
-        .tribunal-number {
-            font-size: 2.5em;
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-radius: 12px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-weight: bold;
-            color: #3498db;
+            font-size: 0.9em;
+        }
+        
+        .tribunal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 10px;
         }
         
-        .tribunal-label {
-            color: #7f8c8d;
-            font-size: 1.1em;
-        }
-        
-        .icon {
-            font-size: 1.2em;
-        }
-        
-        .footer {
+        .stat-item {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 30px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-desc {
+            font-size: 0.8em;
+            color: #7f8c8d;
         }
         
         .refresh-btn {
@@ -133,6 +173,30 @@
             transform: scale(1.05);
         }
         
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 30px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active { background: #2ecc71; }
+        .status-pending { background: #f39c12; }
+        .status-error { background: #e74c3c; }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -151,18 +215,21 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Total de Sentencias por Tribunal</h1>
-            <p>Sistema de descarga masiva del Poder Judicial de Chile</p>
+            <h1>📊 Dashboard de Completitud</h1>
+            <p>Progreso de descarga de sentencias del Poder Judicial de Chile</p>
             <p>Última actualización: <span id="last-update">Cargando...</span></p>
+            <div style="margin-top: 10px;">
+                <span class="status-indicator status-active"></span>
+                <span>Datos obtenidos en tiempo real desde API oficial PJUD</span>
+            </div>
         </div>
         
-        <div class="total-card">
-            <div class="total-number" id="total-general">4,115,881</div>
-            <div class="total-label">Total de Sentencias Disponibles</div>
+        <div class="stats-grid" id="stats-grid">
+            <div class="loading">Cargando datos...</div>
         </div>
         
         <div class="tribunales-grid" id="tribunales-grid">
-            <!-- Los tribunales se cargarán dinámicamente -->
+            <div class="loading">Cargando tribunales...</div>
         </div>
         
         <button class="refresh-btn" onclick="refreshDashboard()">
@@ -176,45 +243,6 @@
     </div>
     
     <script>
-        // Datos de tribunales con totales reales
-        const TRIBUNALES_DATA = {
-            "Corte_Suprema": {
-                "nombre": "Corte Suprema",
-                "icono": "🏛️",
-                "total": 261871
-            },
-            "Corte_de_Apelaciones": {
-                "nombre": "Corte de Apelaciones", 
-                "icono": "⚖️",
-                "total": 1510429
-            },
-            "Laborales": {
-                "nombre": "Tribunales Laborales",
-                "icono": "💼", 
-                "total": 233904
-            },
-            "Penales": {
-                "nombre": "Tribunales Penales",
-                "icono": "⚖️",
-                "total": 862269
-            },
-            "Familia": {
-                "nombre": "Tribunales de Familia",
-                "icono": "👨‍👩‍👧‍👦",
-                "total": 371320
-            },
-            "Civiles": {
-                "nombre": "Tribunales Civiles", 
-                "icono": "📋",
-                "total": 849956
-            },
-            "Cobranza": {
-                "nombre": "Tribunales de Cobranza",
-                "icono": "💰",
-                "total": 26132
-            }
-        };
-        
         // Función para formatear números
         function formatNumber(num) {
             return new Intl.NumberFormat('es-CL').format(num);
@@ -226,39 +254,124 @@
         }
         
         // Función para cargar dashboard
-        function loadDashboard() {
+        async function loadDashboard() {
             try {
+                const response = await fetch('dashboard_data.json');
+                if (!response.ok) {
+                    throw new Error('Error cargando datos');
+                }
+                
+                const data = await response.json();
+                updateDashboard(data);
+                
                 // Actualizar timestamp
                 document.getElementById('last-update').textContent = formatDate(new Date());
                 
-                // Cargar tribunales
-                updateTribunals();
-                
             } catch (error) {
                 console.error('Error cargando dashboard:', error);
+                showError('Error cargando datos del dashboard');
             }
         }
         
+        // Función para actualizar dashboard
+        function updateDashboard(data) {
+            updateStats(data.resumen);
+            updateTribunals(data.tribunales);
+        }
+        
+        // Función para actualizar estadísticas
+        function updateStats(resumen) {
+            const grid = document.getElementById('stats-grid');
+            
+            grid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number total-real">${formatNumber(resumen.total_real)}</div>
+                    <div class="stat-label">Total Real (API PJUD)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number total-descargado">${formatNumber(resumen.total_descargado)}</div>
+                    <div class="stat-label">Total Descargado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number total-pendiente">${formatNumber(resumen.total_pendiente)}</div>
+                    <div class="stat-label">Total Pendiente</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number completitud">${resumen.completitud_general}%</div>
+                    <div class="stat-label">Completitud General</div>
+                </div>
+            `;
+        }
+        
         // Función para actualizar tribunales
-        function updateTribunals() {
+        function updateTribunals(tribunales) {
             const grid = document.getElementById('tribunales-grid');
             grid.innerHTML = '';
             
-            Object.entries(TRIBUNALES_DATA).forEach(([key, tribunal]) => {
+            Object.entries(tribunales).forEach(([tribunal, data]) => {
                 const card = document.createElement('div');
                 card.className = 'tribunal-card';
                 
+                const porcentaje = data.porcentaje;
+                const icono = getTribunalIcon(tribunal);
+                
                 card.innerHTML = `
                     <div class="tribunal-name">
-                        <span class="icon">${tribunal.icono}</span>
-                        ${tribunal.nombre}
+                        <span class="icon">${icono}</span>
+                        ${tribunal.replace('_', ' ')}
                     </div>
-                    <div class="tribunal-number">${formatNumber(tribunal.total)}</div>
-                    <div class="tribunal-label">sentencias disponibles</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${Math.min(porcentaje, 100)}%">
+                            ${porcentaje}%
+                        </div>
+                    </div>
+                    <div class="tribunal-stats">
+                        <div class="stat-item">
+                            <div class="stat-value total-real">${formatNumber(data.total_real)}</div>
+                            <div class="stat-desc">Total Real</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value total-descargado">${formatNumber(data.descargado)}</div>
+                            <div class="stat-desc">Descargado</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value total-pendiente">${formatNumber(data.pendiente)}</div>
+                            <div class="stat-desc">Pendiente</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value completitud">${porcentaje}%</div>
+                            <div class="stat-desc">Completitud</div>
+                        </div>
+                    </div>
                 `;
                 
                 grid.appendChild(card);
             });
+        }
+        
+        // Función para obtener icono del tribunal
+        function getTribunalIcon(tribunal) {
+            const iconos = {
+                'Corte_Suprema': '🏛️',
+                'Corte_de_Apelaciones': '⚖️',
+                'Laborales': '💼',
+                'Penales': '⚖️',
+                'Familia': '👨‍👩‍👧‍👦',
+                'Civiles': '📋',
+                'Cobranza': '💰'
+            };
+            return iconos[tribunal] || '⚖️';
+        }
+        
+        // Función para mostrar errores
+        function showError(message) {
+            const grid = document.getElementById('stats-grid');
+            grid.innerHTML = `
+                <div class="stat-card" style="grid-column: 1 / -1; text-align: center; color: #e74c3c;">
+                    <div class="stat-number">❌</div>
+                    <div class="stat-label">${message}</div>
+                </div>
+            `;
         }
         
         // Función para refrescar dashboard
