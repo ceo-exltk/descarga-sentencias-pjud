@@ -1,0 +1,62 @@
+name: Generar Dashboard
+
+on:
+  # Disparar cada hora
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Disparar manualmente
+  workflow_dispatch:
+  
+  # Disparar cuando se actualice el generador
+  push:
+    branches: [ main ]
+    paths: [ 'scripts/dashboard/**' ]
+
+jobs:
+  generar-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+    
+    - name: Generar dashboard
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      run: |
+        python scripts/dashboard/generar_dashboard.py
+    
+    - name: Configurar Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Commit y push cambios
+      run: |
+        git add docs/dashboard/data/
+        if git diff --staged --quiet; then
+          echo "No hay cambios en los datos del dashboard"
+        else
+          git commit -m "📊 Actualizar dashboard automáticamente [skip ci]"
+          git push
+        fi
+    
+    - name: Configurar GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/dashboard
+        cname: descarga-sentencias-pjud.github.io
