@@ -44,6 +44,20 @@
             font-size: 1.2em;
         }
         
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: #e74c3c;
+            font-size: 1.2em;
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -179,12 +193,6 @@
             margin-top: 30px;
         }
         
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #7f8c8d;
-        }
-        
         .status-indicator {
             display: inline-block;
             width: 12px;
@@ -225,11 +233,11 @@
         </div>
         
         <div class="stats-grid" id="stats-grid">
-            <div class="loading">Cargando datos...</div>
+            <div class="loading">🔄 Ejecutando requests en tiempo real...</div>
         </div>
         
         <div class="tribunales-grid" id="tribunales-grid">
-            <div class="loading">Cargando tribunales...</div>
+            <div class="loading">🔄 Consultando API oficial PJUD...</div>
         </div>
         
         <button class="refresh-btn" onclick="refreshDashboard()">
@@ -243,6 +251,17 @@
     </div>
     
     <script>
+        // Configuración de buscadores (id y cabecera) - IDs CORRECTOS
+        const BUSCADORES = {
+            "Corte_Suprema": ("528", "Buscador_Jurisprudencial_de_la_Corte_Suprema"),
+            "Corte_de_Apelaciones": ("168", "Buscador_Jurisprudencial_de_Cortes_de_Apelaciones"),
+            "Laborales": ("271", "Buscador_Jurisprudencial_de_Tribunales_Laborales"),
+            "Penales": ("268", "Buscador_Jurisprudencial_de_Tribunales_Penales"),
+            "Familia": ("270", "Buscador_Jurisprudencial_de_Tribunales_de_Familia"),
+            "Civiles": ("328", "Buscador_Jurisprudencial_de_Tribunales_Civiles"),
+            "Cobranza": ("269", "Buscador_Jurisprudencial_de_Tribunales_de_Cobranza"),
+        };
+
         // Función para formatear números
         function formatNumber(num) {
             return new Intl.NumberFormat('es-CL').format(num);
@@ -253,23 +272,174 @@
             return new Date(date).toLocaleString('es-CL');
         }
         
-        // Función para cargar dashboard
-        async function loadDashboard() {
+        // Función para obtener token CSRF
+        async function obtenerToken() {
             try {
-                const response = await fetch('dashboard_data.json');
+                const response = await fetch('https://juris.pjud.cl/', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                const text = await response.text();
+                const match = text.match(/name="_token"\s+value="([^"]+)"/);
+                if (match) {
+                    return match[1];
+                }
+                throw new Error('Token CSRF no encontrado');
+            } catch (error) {
+                console.error('Error obteniendo token:', error);
+                throw error;
+            }
+        }
+        
+        // Función para establecer contexto
+        async function establecerContexto() {
+            try {
+                await fetch('https://juris.pjud.cl/busqueda', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+            } catch (error) {
+                console.error('Error estableciendo contexto:', error);
+                throw error;
+            }
+        }
+        
+        // Función para obtener total de un tribunal
+        async function obtenerTotalTribunal(idBuscador, cabecera, nombreTribunal) {
+            try {
+                const url = 'https://juris.pjud.cl/busqueda/buscar_sentencias';
+                const headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+                    'Accept': 'application/json, text/plain, */*',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'busqueda': cabecera,
+                    'Content-Type': 'application/json',
+                    'Referer': `https://juris.pjud.cl/busqueda?${nombreTribunal}`,
+                };
+                
+                const filtrosJson = JSON.stringify({
+                    "rol": "", "era": "", "fec_desde": "", "fec_hasta": "", "tipo_norma": "",
+                    "num_norma": "", "num_art": "", "num_inciso": "", "todas": "", "algunas": "",
+                    "excluir": "", "literal": "", "proximidad": "", "distancia": "",
+                    "analisis_s": "", "submaterias": "", "facetas_seleccionadas": [],
+                    "filtros_omnibox": [], "ids_comunas_seleccionadas_mapa": []
+                });
+
+                const payload = {
+                    "_token": window.csrfToken,
+                    "id_buscador": idBuscador,
+                    "filtros": filtrosJson,
+                    "numero_filas_paginacion": "1",
+                    "offset_paginacion": "0",
+                    "orden": "rel"
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload),
+                    mode: 'cors'
+                });
+                
                 if (!response.ok) {
-                    throw new Error('Error cargando datos');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                updateDashboard(data);
                 
-                // Actualizar timestamp
+                if (data.response && data.response.numFound !== undefined) {
+                    return data.response.numFound;
+                } else {
+                    console.error(`Error en respuesta para ${nombreTribunal}:`, data);
+                    return 0;
+                }
+            } catch (error) {
+                console.error(`Error consultando ${nombreTribunal}:`, error);
+                return 0;
+            }
+        }
+        
+        // Función para cargar dashboard con requests directos
+        async function loadDashboard() {
+            try {
+                document.getElementById('stats-grid').innerHTML = '<div class="loading">🔄 Ejecutando requests en tiempo real...</div>';
+                document.getElementById('tribunales-grid').innerHTML = '<div class="loading">🔄 Consultando API oficial PJUD...</div>';
+                
+                // 1. Obtener token CSRF
+                console.log('🔑 Obteniendo token CSRF...');
+                window.csrfToken = await obtenerToken();
+                console.log('✅ Token CSRF obtenido');
+                
+                // 2. Establecer contexto
+                console.log('🌐 Estableciendo contexto...');
+                await establecerContexto();
+                console.log('✅ Contexto establecido');
+                
+                // 3. Ejecutar requests en paralelo
+                console.log('📊 Ejecutando requests en paralelo...');
+                const promises = Object.entries(BUSCADORES).map(async ([nombre, [idBuscador, cabecera]]) => {
+                    const total = await obtenerTotalTribunal(idBuscador, cabecera, nombre);
+                    console.log(`✅ ${nombre}: ${total.toLocaleString()} sentencias`);
+                    return { nombre, total };
+                });
+                
+                const resultados = await Promise.all(promises);
+                
+                // 4. Procesar resultados
+                const totalesPorTribunal = {};
+                let totalGeneral = 0;
+                
+                resultados.forEach(({ nombre, total }) => {
+                    totalesPorTribunal[nombre] = total;
+                    totalGeneral += total;
+                });
+                
+                // 5. Simular datos de Supabase (placeholder)
+                const totalesDescargados = {
+                    "Corte_Suprema": 0,
+                    "Corte_de_Apelaciones": 0,
+                    "Laborales": 0,
+                    "Penales": 0,
+                    "Familia": 0,
+                    "Civiles": 0,
+                    "Cobranza": 0,
+                };
+                
+                // 6. Calcular completitud
+                const resumen = {
+                    total_real: totalGeneral,
+                    total_descargado: Object.values(totalesDescargados).reduce((a, b) => a + b, 0),
+                    total_pendiente: totalGeneral - Object.values(totalesDescargados).reduce((a, b) => a + b, 0),
+                    completitud_general: 0.0
+                };
+                
+                if (resumen.total_real > 0) {
+                    resumen.completitud_general = (resumen.total_descargado / resumen.total_real) * 100;
+                }
+                
+                const tribunalesData = {};
+                Object.entries(totalesPorTribunal).forEach(([tribunal, realTotal]) => {
+                    const descargado = totalesDescargados[tribunal] || 0;
+                    const porcentaje = realTotal > 0 ? (descargado / realTotal * 100) : 0;
+                    const pendiente = realTotal - descargado;
+                    
+                    tribunalesData[tribunal] = {
+                        total_real: realTotal,
+                        descargado: descargado,
+                        porcentaje: porcentaje,
+                        pendiente: pendiente
+                    };
+                });
+                
+                // 7. Actualizar dashboard
+                updateDashboard({ resumen, tribunales: tribunalesData });
+                
+                // 8. Actualizar timestamp
                 document.getElementById('last-update').textContent = formatDate(new Date());
                 
             } catch (error) {
                 console.error('Error cargando dashboard:', error);
-                showError('Error cargando datos del dashboard');
+                showError('Error ejecutando requests a la API oficial PJUD');
             }
         }
         
@@ -297,7 +467,7 @@
                     <div class="stat-label">Total Pendiente</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number completitud">${resumen.completitud_general}%</div>
+                    <div class="stat-number completitud">${resumen.completitud_general.toFixed(2)}%</div>
                     <div class="stat-label">Completitud General</div>
                 </div>
             `;
@@ -322,7 +492,7 @@
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${Math.min(porcentaje, 100)}%">
-                            ${porcentaje}%
+                            ${porcentaje.toFixed(2)}%
                         </div>
                     </div>
                     <div class="tribunal-stats">
@@ -339,7 +509,7 @@
                             <div class="stat-desc">Pendiente</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value completitud">${porcentaje}%</div>
+                            <div class="stat-value completitud">${porcentaje.toFixed(2)}%</div>
                             <div class="stat-desc">Completitud</div>
                         </div>
                     </div>
@@ -382,8 +552,8 @@
         // Cargar dashboard al inicio
         loadDashboard();
         
-        // Auto-refresh cada 30 segundos
-        setInterval(loadDashboard, 30000);
+        // Auto-refresh cada 5 minutos
+        setInterval(loadDashboard, 300000);
     </script>
 </body>
 </html>
