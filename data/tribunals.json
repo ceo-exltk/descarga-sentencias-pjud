@@ -1,0 +1,149 @@
+[
+  {
+    "nombre": "Corte Suprema",
+    "codigo": "Corte_Suprema",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 50000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#e74c3c",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:23.512394"
+  },
+  {
+    "nombre": "Corte de Apelaciones",
+    "codigo": "Corte_de_Apelaciones",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 100000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#f39c12",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:23.694695"
+  },
+  {
+    "nombre": "Laborales",
+    "codigo": "Laborales",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 75000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#3498db",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:23.863032"
+  },
+  {
+    "nombre": "Penales",
+    "codigo": "Penales",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 150000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#9b59b6",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:24.040028"
+  },
+  {
+    "nombre": "Familia",
+    "codigo": "Familia",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 60000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#2ecc71",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:24.213111"
+  },
+  {
+    "nombre": "Civiles",
+    "codigo": "Civiles",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 80000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#1abc9c",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:24.946107"
+  },
+  {
+    "nombre": "Cobranza",
+    "codigo": "Cobranza",
+    "sentencias_descargadas": 0,
+    "sentencias_estimadas": 40000,
+    "progreso": 0.0,
+    "estado": "pending",
+    "color": "#34495e",
+    "calidad_datos": 0.0,
+    "completitud_campos": {
+      "rol_numero": 0,
+      "caratulado": 0,
+      "texto_completo": 0,
+      "fecha_sentencia": 0
+    },
+    "fecha_minima": null,
+    "fecha_maxima": null,
+    "numeros_sentencia_unicos": 0,
+    "ejemplos_numeros": [],
+    "ultima_actualizacion": "2025-10-05T12:13:25.208613"
+  }
+]

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard - Descarga de Sentencias PJUD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .tribunal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .tribunal-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .tribunal-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .tribunal-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .activity-log {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .activity-log h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .log-entry {
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .log-time {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .log-message {
+            color: #2c3e50;
+            margin-top: 5px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active { background: #2ecc71; }
+        .status-pending { background: #f39c12; }
+        .status-error { background: #e74c3c; }
+        .status-completed { background: #3498db; }
+        
+        .refresh-btn {
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard de Descarga de Sentencias</h1>
+            <p>Sistema de descarga masiva del Poder Judicial de Chile</p>
+            <p>Última actualización: <span id="last-update">Cargando...</span></p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>📄 Total de Sentencias</h3>
+                <div class="stat-number" id="total-sentencias">-</div>
+                <div class="stat-label">Descargadas y procesadas</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>🏛️ Tribunales Activos</h3>
+                <div class="stat-number" id="tribunales-activos">-</div>
+                <div class="stat-label">Con descarga en progreso</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>⚡ Velocidad Promedio</h3>
+                <div class="stat-number" id="velocidad-promedio">-</div>
+                <div class="stat-label">Sentencias por minuto</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>🎯 Tasa de Éxito</h3>
+                <div class="stat-number" id="tasa-exito">-</div>
+                <div class="stat-label">Descargas exitosas</div>
+            </div>
+        </div>
+        
+        <div class="tribunal-grid" id="tribunal-grid">
+            <!-- Los tribunales se cargarán dinámicamente -->
+        </div>
+        
+        <div class="activity-log">
+            <h3>📊 Análisis de Completitud de Campos</h3>
+            <div id="completitud-analysis">
+                <div class="log-entry">
+                    <div class="log-time">Cargando análisis...</div>
+                    <div class="log-message">Analizando completitud de campos importantes</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-log">
+            <h3>📝 Bitácora de Actividad</h3>
+            <div id="activity-log">
+                <div class="log-entry">
+                    <div class="log-time">Cargando actividad...</div>
+                    <div class="log-message">Inicializando dashboard</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="refresh-btn" onclick="refreshDashboard()">
+            🔄 Actualizar Dashboard
+        </button>
+        
+        <div class="footer">
+            <p>🚀 Sistema de Descarga Cloud - GitHub Actions + Supabase</p>
+            <p>Desarrollado con ❤️ para el acceso a la justicia</p>
+        </div>
+    </div>
+    
+    <script>
+        // Función para formatear números
+        function formatNumber(num) {
+            return new Intl.NumberFormat('es-CL').format(num);
+        }
+        
+        // Función para formatear fecha
+        function formatDate(date) {
+            return new Date(date).toLocaleString('es-CL');
+        }
+        
+        // Función para cargar datos del dashboard
+        async function loadDashboard() {
+            try {
+                // Cargar datos de estadísticas
+                const statsResponse = await fetch('data/stats.json');
+                if (statsResponse.ok) {
+                    const stats = await statsResponse.json();
+                    updateStats(stats);
+                }
+                
+                // Cargar datos de tribunales
+                const tribunalsResponse = await fetch('data/tribunals.json');
+                if (tribunalsResponse.ok) {
+                    const tribunals = await tribunalsResponse.json();
+                    updateTribunals(tribunals);
+                }
+                
+                // Cargar bitácora de actividad
+                const activityResponse = await fetch('data/activity.json');
+                if (activityResponse.ok) {
+                    const activity = await activityResponse.json();
+                    updateActivity(activity);
+                }
+                
+                // Cargar análisis de completitud
+                if (stats.completitud_general) {
+                    updateCompletitudAnalysis(stats.completitud_general);
+                }
+                
+                // Actualizar timestamp
+                document.getElementById('last-update').textContent = formatDate(new Date());
+                
+            } catch (error) {
+                console.error('Error cargando dashboard:', error);
+                showError('Error cargando datos del dashboard');
+            }
+        }
+        
+        // Función para actualizar estadísticas
+        function updateStats(stats) {
+            document.getElementById('total-sentencias').textContent = formatNumber(stats.total_sentencias || 0);
+            document.getElementById('tribunales-activos').textContent = stats.tribunales_activos || 0;
+            document.getElementById('velocidad-promedio').textContent = stats.velocidad_promedio || '0';
+            document.getElementById('tasa-exito').textContent = (stats.tasa_exito || 0) + '%';
+        }
+        
+        // Función para actualizar tribunales
+        function updateTribunals(tribunals) {
+            const grid = document.getElementById('tribunal-grid');
+            grid.innerHTML = '';
+            
+            tribunals.forEach(tribunal => {
+                const card = document.createElement('div');
+                card.className = 'tribunal-card';
+                
+                const progress = (tribunal.sentencias_descargadas / tribunal.sentencias_estimadas) * 100;
+                const calidad = tribunal.calidad_datos || 0;
+                
+                // Crear indicadores de completitud de campos
+                const completitudHTML = tribunal.completitud_campos ? 
+                    Object.entries(tribunal.completitud_campos).map(([campo, porcentaje]) => 
+                        `<div style="font-size: 0.8em; margin: 2px 0;">
+                            ${campo}: ${porcentaje.toFixed(1)}%
+                        </div>`
+                    ).join('') : '';
+                
+                // Crear ejemplos de números de sentencia
+                const ejemplosHTML = tribunal.ejemplos_numeros && tribunal.ejemplos_numeros.length > 0 ?
+                    `<div style="font-size: 0.8em; margin-top: 5px;">
+                        <strong>Ejemplos ROL:</strong> ${tribunal.ejemplos_numeros.join(', ')}
+                    </div>` : '';
+                
+                card.innerHTML = `
+                    <div class="tribunal-name">
+                        <span class="status-indicator status-${tribunal.estado}"></span>
+                        ${tribunal.nombre}
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${Math.min(progress, 100)}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        ${formatNumber(tribunal.sentencias_descargadas)} / ${formatNumber(tribunal.sentencias_estimadas)} sentencias (${progress.toFixed(1)}%)
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #7f8c8d;">
+                        <div><strong>Calidad de datos:</strong> ${calidad.toFixed(1)}%</div>
+                        <div><strong>Números únicos:</strong> ${formatNumber(tribunal.numeros_sentencia_unicos || 0)}</div>
+                        ${tribunal.fecha_minima ? `<div><strong>Rango fechas:</strong> ${tribunal.fecha_minima} a ${tribunal.fecha_maxima}</div>` : ''}
+                    </div>
+                    <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 5px; font-size: 0.8em;">
+                        <div><strong>Completitud de campos:</strong></div>
+                        ${completitudHTML}
+                    </div>
+                    ${ejemplosHTML}
+                    <div style="margin-top: 8px; font-size: 0.8em; color: #95a5a6;">
+                        Estado: ${tribunal.estado} | Actualizado: ${formatDate(tribunal.ultima_actualizacion)}
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Función para actualizar bitácora
+        function updateActivity(activity) {
+            const log = document.getElementById('activity-log');
+            log.innerHTML = '';
+            
+            activity.entries.slice(0, 10).forEach(entry => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <div class="log-time">${formatDate(entry.timestamp)}</div>
+                    <div class="log-message">${entry.message}</div>
+                `;
+                log.appendChild(logEntry);
+            });
+        }
+        
+        // Función para mostrar errores
+        function showError(message) {
+            const log = document.getElementById('activity-log');
+            const errorEntry = document.createElement('div');
+            errorEntry.className = 'log-entry';
+            errorEntry.style.borderLeftColor = '#e74c3c';
+            errorEntry.innerHTML = `
+                <div class="log-time">${formatDate(new Date())}</div>
+                <div class="log-message" style="color: #e74c3c;">❌ ${message}</div>
+            `;
+            log.insertBefore(errorEntry, log.firstChild);
+        }
+        
+        // Función para actualizar análisis de completitud
+        function updateCompletitudAnalysis(completitud) {
+            const analysisDiv = document.getElementById('completitud-analysis');
+            analysisDiv.innerHTML = '';
+            
+            Object.entries(completitud).forEach(([campo, porcentaje]) => {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                
+                // Determinar color según porcentaje
+                let color = '#e74c3c'; // Rojo
+                if (porcentaje >= 80) color = '#2ecc71'; // Verde
+                else if (porcentaje >= 60) color = '#f39c12'; // Naranja
+                
+                entry.innerHTML = `
+                    <div class="log-time">${campo.replace('_', ' ').toUpperCase()}</div>
+                    <div class="log-message">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="flex: 1; background: #ecf0f1; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: ${color}; height: 100%; width: ${porcentaje}%; transition: width 0.3s ease;"></div>
+                            </div>
+                            <div style="font-weight: bold; color: ${color}; min-width: 50px;">${porcentaje.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                `;
+                
+                analysisDiv.appendChild(entry);
+            });
+        }
+        
+        // Función para refrescar dashboard
+        function refreshDashboard() {
+            loadDashboard();
+        }
+        
+        // Cargar dashboard al inicio
+        loadDashboard();
+        
+        // Auto-refresh cada 30 segundos
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>

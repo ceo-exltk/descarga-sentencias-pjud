@@ -1,0 +1,36 @@
+{
+  "entradas": [
+    {
+      "timestamp": "2025-10-05T12:13:25.209737",
+      "message": "Dashboard actualizado automáticamente",
+      "tipo": "info",
+      "nivel": "info"
+    },
+    {
+      "timestamp": "2025-10-05T12:08:25.209749",
+      "message": "Descarga incremental completada para Corte Suprema",
+      "tipo": "success",
+      "nivel": "info"
+    },
+    {
+      "timestamp": "2025-10-05T11:58:25.209758",
+      "message": "Iniciando descarga histórica para Laborales",
+      "tipo": "info",
+      "nivel": "info"
+    },
+    {
+      "timestamp": "2025-10-05T11:43:25.209762",
+      "message": "Workflow GitHub Actions ejecutado exitosamente",
+      "tipo": "success",
+      "nivel": "info"
+    },
+    {
+      "timestamp": "2025-10-05T11:13:25.209765",
+      "message": "Sistema de monitoreo activado",
+      "tipo": "info",
+      "nivel": "info"
+    }
+  ],
+  "total_entradas": 5,
+  "ultima_actualizacion": "2025-10-05T12:13:25.209769"
+}
