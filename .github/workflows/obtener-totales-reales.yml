@@ -34,14 +34,14 @@ jobs:
         echo "🌍 IP del runner: $(curl -s https://httpbin.org/ip | jq -r '.origin')"
         echo ""
         
-        # Intentar obtener totales reales primero
-        echo "🔍 Intentando obtener totales reales de la API..."
-        python scripts/cloud/obtener_totales_reales_cloud.py
+        # Estrategia 1: Comportamiento humano para evitar HTTP 419
+        echo "🤖 Intentando con simulación de comportamiento humano..."
+        python scripts/cloud/obtener_totales_humano.py
         
-        # Si falla, usar estimaciones históricas
-        if [ $? -ne 0 ] || [ ! -f totales_reales_cloud_*.json ]; then
+        # Estrategia 2: Si falla, usar estimaciones históricas
+        if [ $? -ne 0 ] || [ ! -f totales_humano_cloud_*.json ]; then
           echo ""
-          echo "⚠️ API del PJUD bloqueada - Usando estimaciones históricas"
+          echo "⚠️ Estrategia humana falló - Usando estimaciones históricas"
           echo "📊 Generando totales basados en análisis de patrones..."
           python scripts/cloud/obtener_totales_estimados.py
         fi
@@ -51,7 +51,7 @@ jobs:
         echo "📊 PROCESANDO RESULTADOS"
         echo "======================="
         
-        # Buscar el archivo más reciente de totales (reales o estimados)
+        # Buscar el archivo más reciente de totales (humano, reales o estimados)
         LATEST_FILE=$(ls -t totales_*_cloud_*.json 2>/dev/null | head -n 1)
         
         if [ -f "$LATEST_FILE" ]; then
@@ -62,8 +62,11 @@ jobs:
           echo "📈 RESUMEN DE TOTALES:"
           echo "====================="
           
-          # Verificar si es archivo de estimaciones o reales
-          if [[ "$LATEST_FILE" == *"estimados"* ]]; then
+          # Verificar tipo de archivo
+          if [[ "$LATEST_FILE" == *"humano"* ]]; then
+            echo "🤖 Usando simulación de comportamiento humano"
+            jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tostring)"' "$LATEST_FILE"
+          elif [[ "$LATEST_FILE" == *"estimados"* ]]; then
             echo "📊 Usando estimaciones históricas (API bloqueada)"
             jq -r '.totales_por_tribunal | to_entries[] | "\(.key): \(.value | tostring)"' "$LATEST_FILE"
           else
