@@ -1,0 +1,82 @@
+{
+  "configuracion": {
+    "version": "1.0",
+    "descripcion": "Configuración para descarga del universo completo durante 5 días",
+    "fecha_creacion": "2025-01-06"
+  },
+  "descarga": {
+    "total_estimado": 4115881,
+    "tribunales": 7,
+    "duracion_dias": 5,
+    "batch_size": 50,
+    "max_workers_por_tribunal": 3,
+    "rate_limit_delay": 0.5,
+    "max_retries": 5,
+    "timeout": 30
+  },
+  "horarios": {
+    "inicio_diario": 6,
+    "fin_diario": 22,
+    "pausa_nocturna": true,
+    "pausa_entre_tribunales": 300,
+    "pausa_por_error": 1800,
+    "pausa_ciclo": 3600
+  },
+  "tribunales": {
+    "Corte_de_Apelaciones": {
+      "prioridad": 1,
+      "total_estimado": 1510429,
+      "workers": 3,
+      "descripcion": "Corte de Apelaciones - Más grande"
+    },
+    "Civiles": {
+      "prioridad": 2,
+      "total_estimado": 849956,
+      "workers": 2,
+      "descripcion": "Tribunales Civiles"
+    },
+    "Penales": {
+      "prioridad": 2,
+      "total_estimado": 862269,
+      "workers": 2,
+      "descripcion": "Tribunales Penales"
+    },
+    "Familia": {
+      "prioridad": 3,
+      "total_estimado": 371320,
+      "workers": 1,
+      "descripcion": "Tribunales de Familia"
+    },
+    "Laborales": {
+      "prioridad": 3,
+      "total_estimado": 233904,
+      "workers": 1,
+      "descripcion": "Tribunales Laborales"
+    },
+    "Corte_Suprema": {
+      "prioridad": 3,
+      "total_estimado": 261871,
+      "workers": 1,
+      "descripcion": "Corte Suprema"
+    },
+    "Cobranza": {
+      "prioridad": 3,
+      "total_estimado": 26132,
+      "workers": 1,
+      "descripcion": "Tribunales de Cobranza - Más pequeño"
+    }
+  },
+  "seguridad": {
+    "rate_limiting": true,
+    "retry_automatico": true,
+    "pausas_inteligentes": true,
+    "recuperacion_estado": true,
+    "logs_detallados": true
+  },
+  "monitoreo": {
+    "actualizacion_intervalo": 30,
+    "logs_retention_days": 7,
+    "estado_auto_save": true,
+    "dashboard_tiempo_real": true
+  }
+}
