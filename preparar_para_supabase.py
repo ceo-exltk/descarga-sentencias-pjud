@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Script para preparar archivos descargados para ingesta en Supabase
+Script corregido para preparar archivos descargados para ingesta en Supabase
+con mapeo correcto de campos
 """
 
 import json
@@ -8,6 +9,64 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
+
+def mapear_sentencia_para_supabase(sentencia_api, tribunal):
+    """Mapea una sentencia de la API al formato esperado por Supabase"""
+    
+    # Solo mapear campos que existen en la tabla Supabase
+    sentencia_supabase = {
+        # Campos básicos
+        "rol_numero": sentencia_api.get("rol_era_sup_s", ""),
+        "rol_completo": sentencia_api.get("rol_era_sup_s", ""),
+        "correlativo": sentencia_api.get("correlativo", ""),
+        "caratulado": sentencia_api.get("caratulado_s", ""),
+        "caratulado_anonimizado": sentencia_api.get("caratulado_anonimizado", ""),
+        "fallo_anonimizado": sentencia_api.get("fallo_anonimizado", ""),
+        
+        # Fechas
+        "fecha_sentencia": sentencia_api.get("sent__fec_sentencia_dt", ""),
+        "fecha_actualizacion": sentencia_api.get("sent__fec_actualiza_dt", ""),
+        
+        # Información del tribunal
+        "era": sentencia_api.get("era_sup_i", ""),
+        "corte": tribunal,
+        "codigo_corte": sentencia_api.get("cod_juz_i", ""),
+        "sala": sentencia_api.get("sala", ""),
+        "juzgado": sentencia_api.get("juzgado", ""),
+        
+        # Información del proceso
+        "tipo_recurso": sentencia_api.get("tipo_recurso", ""),
+        "resultado_recurso": sentencia_api.get("resultado_recurso", ""),
+        "libro": sentencia_api.get("libro", ""),
+        
+        # Personas
+        "ministros": sentencia_api.get("ministros", []),
+        "redactor": sentencia_api.get("redactor", ""),
+        "id_redactor": sentencia_api.get("id_redactor", ""),
+        "relator": sentencia_api.get("relator", ""),
+        
+        # Clasificación
+        "materias": sentencia_api.get("materias", []),
+        "descriptores": sentencia_api.get("descriptores", []),
+        "normas": sentencia_api.get("normas", []),
+        
+        # Publicación
+        "condicion_publicacion": sentencia_api.get("gls_condicion_publicacion_s", ""),
+        "publicacion_original": sentencia_api.get("publicacion_original", ""),
+        "url_acceso": sentencia_api.get("url_acceso", ""),
+        "url_corta": sentencia_api.get("url_corta", ""),
+        
+        # Texto completo (si está disponible)
+        "texto_completo": sentencia_api.get("texto_completo", "")
+    }
+    
+    # Limpiar campos vacíos o None
+    sentencia_limpia = {}
+    for key, value in sentencia_supabase.items():
+        if value is not None and value != "":
+            sentencia_limpia[key] = value
+    
+    return sentencia_limpia
 
 def procesar_archivos_descarga(directorio_output):
     """Procesa todos los archivos JSON de descarga y los prepara para Supabase"""
@@ -41,19 +100,18 @@ def procesar_archivos_descarga(directorio_output):
             sentencias = data.get('sentencias', [])
             tribunal = data.get('tribunal', 'Desconocido')
             
-            # Agregar metadatos para Supabase
+            # Mapear cada sentencia al formato de Supabase
+            sentencias_mapeadas = []
             for sentencia in sentencias:
-                sentencia['tribunal_origen'] = tribunal
-                sentencia['batch_id'] = data.get('batch', 0)
-                sentencia['fecha_descarga'] = datetime.now().isoformat()
-                sentencia['archivo_origen'] = str(archivo)
+                sentencia_mapeada = mapear_sentencia_para_supabase(sentencia, tribunal)
+                sentencias_mapeadas.append(sentencia_mapeada)
             
-            sentencias_totales.extend(sentencias)
+            sentencias_totales.extend(sentencias_mapeadas)
             estadisticas["archivos_procesados"] += 1
-            estadisticas["sentencias_totales"] += len(sentencias)
+            estadisticas["sentencias_totales"] += len(sentencias_mapeadas)
             estadisticas["tribunales"].add(tribunal)
             
-            print(f"✅ {archivo.name}: {len(sentencias)} sentencias")
+            print(f"✅ {archivo.name}: {len(sentencias_mapeadas)} sentencias mapeadas")
             
         except Exception as e:
             print(f"❌ Error procesando {archivo}: {e}")

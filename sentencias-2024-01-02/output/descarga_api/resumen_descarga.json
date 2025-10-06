@@ -1,0 +1,20 @@
+{
+  "timestamp_inicio": "2025-10-06T00:52:09.835975",
+  "timestamp_fin": "2025-10-06T00:53:31.292799",
+  "duracion_segundos": 81.456824,
+  "duracion_humanizada": "0:01:21",
+  "estadisticas": {
+    "inicio": "2025-10-06 00:52:09.835975",
+    "total_descargado": 893,
+    "total_errores": 2,
+    "tribunales_completados": 7,
+    "tribunales_totales": 7,
+    "filtros_fecha": {
+      "fecha_desde": "2024-01-02",
+      "fecha_hasta": "2024-01-02"
+    }
+  },
+  "directorio_salida": "output/descarga_api",
+  "metodo": "API oficial PJUD (misma API de totales)",
+  "fuente": "https://juris.pjud.cl/busqueda/buscar_sentencias"
+}
