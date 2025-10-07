@@ -28,8 +28,8 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 supabase
-          echo "📦 Dependencias instaladas: requests, beautifulsoup4, supabase"
+          pip install requests beautifulsoup4 lxml supabase-py
+          echo "📦 Dependencias instaladas: requests, beautifulsoup4, lxml, supabase-py"
       
       - name: Descargar sentencias del día
         run: |
