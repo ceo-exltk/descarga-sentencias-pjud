@@ -1,0 +1,10 @@
+Fecha: 2024-01-02
+Timestamp: Mon Oct  6 00:53:31 UTC 2025
+Cargado a Supabase: true
+Archivos generados:
+16
+Total de archivos JSON generados
+
+=== ESTADÍSTICAS SUPABASE ===
+✅ Datos cargados automáticamente
+🔗 URL: https://wluachczgiyrmrhdpcue.supabase.co

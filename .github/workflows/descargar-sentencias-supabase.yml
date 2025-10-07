@@ -1,0 +1,101 @@
+name: "Descargar y Cargar a Supabase"
+
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha a descargar (YYYY-MM-DD)'
+        required: true
+        default: '2024-01-15'
+      cargar_supabase:
+        description: '¿Cargar automáticamente a Supabase?'
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  descargar-y-cargar:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+          echo "📦 Dependencias instaladas"
+      
+      - name: Descargar sentencias del día
+        run: |
+          echo "📅 Descargando sentencias del día: ${{ github.event.inputs.fecha }}"
+          python3 descargar_sentencias_api.py ${{ github.event.inputs.fecha }} ${{ github.event.inputs.fecha }}
+      
+      - name: Preparar archivos para Supabase
+        run: |
+          echo "🔄 Preparando archivos para ingesta en Supabase..."
+          python3 preparar_para_supabase.py output/descarga_api
+      
+      - name: Cargar a Supabase (si está habilitado)
+        if: ${{ github.event.inputs.cargar_supabase == true }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "🚀 Cargando datos a Supabase..."
+          if [ -f "output/descarga_api/sentencias_para_supabase.json" ]; then
+            python3 cargar_a_supabase.py \
+              output/descarga_api/sentencias_para_supabase.json \
+              $SUPABASE_URL \
+              $SUPABASE_KEY
+            echo "✅ Datos cargados exitosamente a Supabase"
+          else
+            echo "❌ Archivo de sentencias no encontrado"
+            exit 1
+          fi
+      
+      - name: Crear resumen
+        run: |
+          echo "📊 Creando resumen de descarga..."
+          echo "Fecha: ${{ github.event.inputs.fecha }}" > descarga_resumen.txt
+          echo "Timestamp: $(date)" >> descarga_resumen.txt
+          echo "Cargado a Supabase: ${{ github.event.inputs.cargar_supabase }}" >> descarga_resumen.txt
+          echo "Archivos generados:" >> descarga_resumen.txt
+          find output/ -name "*.json" | wc -l >> descarga_resumen.txt
+          echo "Total de archivos JSON generados" >> descarga_resumen.txt
+          
+          # Agregar estadísticas de Supabase si se cargó
+          if [ "${{ github.event.inputs.cargar_supabase }}" == "true" ]; then
+            echo "" >> descarga_resumen.txt
+            echo "=== ESTADÍSTICAS SUPABASE ===" >> descarga_resumen.txt
+            echo "✅ Datos cargados automáticamente" >> descarga_resumen.txt
+            echo "🔗 URL: ${{ secrets.SUPABASE_URL }}" >> descarga_resumen.txt
+          fi
+      
+      - name: Upload resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentencias-${{ github.event.inputs.fecha }}
+          path: |
+            output/
+            descarga_resumen.txt
+          retention-days: 30
+      
+      - name: Mostrar resumen final
+        run: |
+          echo "✅ Proceso completado para el día: ${{ github.event.inputs.fecha }}"
+          echo "📁 Archivos generados:"
+          find output/ -name "*.json" | head -10
+          echo "..."
+          echo "📊 Total de archivos: $(find output/ -name "*.json" | wc -l)"
+          
+          if [ "${{ github.event.inputs.cargar_supabase }}" == "true" ]; then
+            echo "🚀 Datos cargados automáticamente a Supabase"
+          else
+            echo "📦 Archivos listos para carga manual a Supabase"
+          fi

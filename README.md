@@ -1,191 +1,236 @@
-# 🏛️ Sistema de Descarga de Sentencias del Poder Judicial
+# 🏛️ Descarga Automática de Sentencias PJUD
 
-## 📋 Descripción
+Sistema automatizado para descargar sentencias del Poder Judicial de Chile y cargarlas automáticamente a Supabase usando GitHub Actions.
 
-Sistema completo para la descarga masiva de sentencias de todos los tribunales del Poder Judicial de Chile desde `juris.pjud.cl`, con workers paralelos optimizados y migración automática a Supabase.
+## 🚀 **Características Principales**
 
-## 🚀 Características Principales
+- ✅ **Descarga automática diaria** a las 6:00 AM (UTC-3)
+- ✅ **Carga automática a Supabase** sin intervención manual
+- ✅ **Sistema de retry** en caso de errores
+- ✅ **Descarga manual** para fechas específicas
+- ✅ **Monitoreo completo** con logs detallados
+- ✅ **Artifacts automáticos** con resultados
 
-- **Descarga Universal**: Todos los tribunales en un solo sistema
-- **Workers Paralelos**: Hasta 100 workers simultáneos
-- **Migración Automática**: Integración directa con Supabase
-- **Monitoreo en Tiempo Real**: Dashboard de progreso en vivo
-- **Recuperación de Errores**: Sistema robusto de reintentos
-- **Rate Limiting Inteligente**: Evita bloqueos del servidor
+## 📋 **Configuración Inicial**
 
-## 📁 Estructura del Proyecto
+### **1. Configurar Secretos de GitHub**
+
+Ve a tu repositorio en GitHub: `https://github.com/ceo-exltk/descarga-sentencias-pjud`
+
+1. **Settings** → **Secrets and variables** → **Actions**
+2. **Agregar los siguientes secretos:**
 
 ```
-descarga_sentencias/
-├── scripts/
-│   ├── descarga/                    # Scripts de descarga
-│   │   ├── descarga_universal_completa.py
-│   │   ├── universal_sentencias_worker.py
-│   │   ├── enhanced_text_worker_correcto.py
-│   │   ├── descarga_especifica_100_workers.py
-│   │   └── descarga_rango_especifico.py
-│   ├── migracion/                   # Scripts de migración
-│   │   ├── migrate_sentencias_final.py
-│   │   └── migrate_sentencias_corrected.py
-│   └── monitoreo/                   # Scripts de monitoreo
-│       ├── monitor_descarga_universal.py
-│       └── verificar_progreso.py
-├── config/                          # Configuración
-│   ├── config_descarga_universal.json
-│   └── configurar_descarga_universal.py
-├── docs/                           # Documentación
-│   ├── README_DESCARGA_UNIVERSAL.md
-│   ├── ANALISIS_BLOQUEO_SERVIDOR.md
-│   ├── ESTRATEGIA_DESBLOQUEO.md
-│   └── INSTRUCCIONES_MÁQUINA_2.md
-├── output/                         # Datos descargados
-│   ├── descarga_universal_completa/
-│   ├── descarga_corte_suprema_fase3_100workers/
-│   └── descarga_completa_1501_2615/
-└── README.md                       # Este archivo
+SUPABASE_URL = https://wluachczgiyrmrhdpcue.supabase.co
+SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdWFjaGN6Z2l5cm1yaGRwY3VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5MjA1NDcsImV4cCI6MjA3MjQ5NjU0N30.gXSqEYy_LFp951EnBhFxU_7RSf5VbJXRc2GlLn7OB7I
 ```
 
-## 🏛️ Tribunales Soportados
-
-| Tribunal | Páginas Estimadas | Workers | Descripción |
-|----------|------------------|---------|-------------|
-| **Corte Suprema** | 2,615 | 50 | Corte Suprema de Chile |
-| **Corte de Apelaciones** | 150,989 | 50 | Cortes de Apelaciones |
-| **Laborales** | 17,396 | 50 | Tribunales Laborales |
-| **Penales** | 22,801 | 50 | Tribunales Penales |
-| **Familia** | 11,335 | 50 | Tribunales de Familia |
-| **Civiles** | 33,313 | 50 | Tribunales Civiles |
-| **Cobranza** | 2,613 | 50 | Tribunales de Cobranza |
-
-**Total**: ~241,000 páginas con 350+ workers
-
-## 🚀 Inicio Rápido
-
-### **1. Descarga Universal (Recomendada)**
+### **2. Verificar Configuración**
 
 ```bash
-# Ejecutar descarga completa de todos los tribunales
-python3 scripts/descarga/descarga_universal_completa.py
-
-# Monitorear progreso (en terminal separada)
-python3 scripts/monitoreo/monitor_descarga_universal.py
+# Verificar que todo esté configurado correctamente
+python3 verificar_configuracion.py
 ```
 
-### **2. Descarga Específica**
+## 🎯 **Cómo Usar el Sistema**
+
+### **Opción A: Ejecución Automática (Recomendada)**
+
+El sistema se ejecuta **automáticamente todos los días a las 6:00 AM (UTC-3)** descargando las sentencias del día anterior.
+
+**No necesitas hacer nada** - el sistema funciona solo.
+
+### **Opción B: Ejecución Manual**
+
+#### **1. Desde GitHub (Recomendado)**
+
+1. Ve a **Actions** en tu repositorio
+2. Selecciona **"Descarga Diaria Automática"**
+3. Click **"Run workflow"**
+4. Opcionalmente ingresa una fecha específica
+5. Click **"Run workflow"**
+
+#### **2. Desde Terminal Local**
 
 ```bash
-# Descarga con 100 workers (alta velocidad)
-python3 scripts/descarga/descarga_especifica_100_workers.py
+# Ejecutar para fecha específica
+python3 ejecutar_workflow_supabase.py 2024-01-15
 
-# Descarga de rango específico
-python3 scripts/descarga/descarga_rango_especifico.py
+# Ejecutar para ayer (automático)
+python3 ejecutar_workflow_supabase.py
 ```
 
-### **3. Migración a Supabase**
+### **Opción C: Descarga Manual (Sin Supabase)**
 
-```bash
-# Migrar datos descargados a Supabase
-python3 scripts/migracion/migrate_sentencias_final.py
-```
+1. Ve a **Actions** → **"Descargar Sentencias por Día"**
+2. Click **"Run workflow"**
+3. Ingresa la fecha deseada
+4. Click **"Run workflow"**
 
-## ⚙️ Configuración
+## 📊 **Monitoreo y Resultados**
 
-### **Configuración Básica**
+### **Ver Progreso en Tiempo Real**
 
-```bash
-# Configurar parámetros del sistema
-python3 config/configurar_descarga_universal.py
-```
+1. Ve a **Actions** en tu repositorio
+2. Click en la ejecución en curso
+3. Monitorea los logs paso a paso
 
-### **Parámetros Principales**
+### **Descargar Resultados**
 
-- **Workers por tribunal**: 50 (máximo recomendado)
-- **Pausa entre tribunales**: 30 segundos
-- **Timeout requests**: 30 segundos
-- **Retry attempts**: 3
+1. Ve a la ejecución completada
+2. En la sección **"Artifacts"** descarga el archivo
+3. Descomprime para obtener:
+   - `sentencias_consolidadas.json` - Archivo completo
+   - `sentencias_para_supabase.json` - Solo para Supabase
+   - `estadisticas_descarga.json` - Estadísticas
+   - `descarga_resumen.txt` - Resumen en texto
 
-## 📊 Monitoreo
+### **Verificar en Supabase**
 
-### **Dashboard en Tiempo Real**
-
-```bash
-python3 scripts/monitoreo/monitor_descarga_universal.py
-```
-
-### **Verificación de Progreso**
-
-```bash
-python3 scripts/monitoreo/verificar_progreso.py
-```
-
-## 🗄️ Base de Datos
-
-### **Supabase Configuration**
-
-- **URL**: `https://wluachczgiyrmrhdpcue.supabase.co`
+Los datos se cargan automáticamente en tu base de datos Supabase. Puedes verificar en:
+- **Dashboard de Supabase**: https://supabase.com/dashboard
 - **Tabla**: `sentencias`
-- **Migración**: Automática con scripts incluidos
 
-## 📈 Rendimiento Esperado
+## 🔧 **Workflows Disponibles**
 
-### **Estimaciones de Tiempo**
+| Workflow | Función | Frecuencia | Supabase |
+|----------|---------|------------|----------|
+| **Descarga Diaria Automática** | Descarga automática diaria | Diario 6:00 AM | ✅ Sí |
+| **Descargar Sentencias por Día** | Descarga manual | Manual | ❌ No |
+| **Descargar y Cargar a Supabase** | Descarga + carga manual | Manual | ✅ Sí |
 
-| Configuración | Workers | Velocidad | Tiempo Estimado |
-|---------------|---------|-----------|-----------------|
-| **Conservadora** | 1-2 | 10-20 sentencias/min | 20-40 horas |
-| **Moderada** | 50 | 100-200 sentencias/min | 2-4 horas |
-| **Agresiva** | 100+ | 500+ sentencias/min | 30-60 minutos |
+## 🛠️ **Troubleshooting**
 
-## 🛡️ Consideraciones de Seguridad
+### **❌ Error: "No se puede disparar workflow"**
 
-- **Rate Limiting**: Pausas entre requests
-- **User-Agent**: Identificación apropiada
-- **Timeout**: Evitar conexiones colgadas
-- **Retry Logic**: Recuperación de errores
-- **Logging**: Trazabilidad completa
+**Causa**: GitHub CLI no configurado o sin permisos
 
-## 🔧 Solución de Problemas
-
-### **Error HTTP 419 (Bloqueo del Servidor)**
-
+**Solución**:
 ```bash
-# Verificar estado del servidor
-curl -I "https://juris.pjud.cl"
+# Instalar GitHub CLI
+brew install gh  # macOS
+# o
+sudo apt install gh  # Ubuntu
 
-# Usar configuración ultra-conservadora
-# Esperar 24-48 horas antes de reintentar
+# Autenticar
+gh auth login
 ```
 
-### **Error de Memoria**
+### **❌ Error: "Supabase connection failed"**
 
+**Causa**: Secretos de GitHub mal configurados
+
+**Solución**:
+1. Verificar que los secretos estén en **Settings** → **Secrets and variables** → **Actions**
+2. Verificar que los nombres sean exactos: `SUPABASE_URL` y `SUPABASE_ANON_KEY`
+3. Verificar que los valores sean correctos
+
+### **❌ Error: "Workflow not found"**
+
+**Causa**: Workflow no está en el repositorio
+
+**Solución**:
 ```bash
-# Reducir workers por tribunal
-# Editar config/config_descarga_universal.json
-# Cambiar "max_workers_por_tribunal": 25
+# Hacer push de los workflows
+git add .github/workflows/
+git commit -m "➕ Agregar workflows"
+git push origin main
 ```
 
-## 📞 Soporte
+### **❌ Error: "Archivo de sentencias no encontrado"**
 
-Para problemas o preguntas:
+**Causa**: La descarga falló o no hay sentencias para esa fecha
 
-1. **Verificar logs**: `tail -f *.log`
-2. **Revisar configuración**: `cat config/config_descarga_universal.json`
-3. **Monitorear progreso**: `python3 scripts/monitoreo/verificar_progreso.py`
+**Solución**:
+1. Verificar que la fecha sea válida
+2. Verificar que haya sentencias publicadas ese día
+3. Revisar los logs de la descarga
 
-## 📚 Documentación Adicional
+### **❌ Error: "Timeout"**
 
-- [README Detallado](docs/README_DESCARGA_UNIVERSAL.md)
-- [Análisis de Bloqueos](docs/ANALISIS_BLOQUEO_SERVIDOR.md)
-- [Estrategias de Desbloqueo](docs/ESTRATEGIA_DESBLOQUEO.md)
+**Causa**: La descarga toma más de 1 hora
 
-## 🎯 Próximos Pasos
+**Solución**:
+1. El sistema tiene retry automático
+2. Si persiste, ejecutar manualmente para esa fecha
+3. Considerar dividir en fechas más pequeñas
 
-1. **Configurar descarga** con parámetros deseados
-2. **Ejecutar descarga** en horario de bajo tráfico
-3. **Monitorear progreso** con dashboard en tiempo real
-4. **Migrar datos** a Supabase
-5. **Verificar resultados** en base de datos
+### **❌ Error: "Rate limit exceeded"**
+
+**Causa**: Demasiadas solicitudes a la API
+
+**Solución**:
+1. El sistema tiene retry automático
+2. Esperar unos minutos y reintentar
+3. Verificar que no haya múltiples ejecuciones simultáneas
+
+## 📈 **Límites y Consideraciones**
+
+### **Límites de GitHub Actions**
+- **Gratuito**: 2,000 minutos/mes
+- **Máximo por job**: 6 horas
+- **Workflows paralelos**: Hasta 20
+
+### **Optimizaciones Implementadas**
+- **Timeout de 1 hora** por job
+- **Retry automático** en caso de fallo
+- **Artifacts con retención de 7 días**
+- **Descarga incremental** por fecha
+
+## 🔄 **Mantenimiento**
+
+### **Verificar Estado del Sistema**
+
+```bash
+# Verificar configuración
+python3 verificar_configuracion.py
+
+# Ver logs de GitHub Actions
+gh run list
+gh run view [run-id]
+```
+
+### **Actualizar Secretos**
+
+Si cambias las credenciales de Supabase:
+
+1. Actualizar en **GitHub Secrets**
+2. El sistema usará automáticamente los nuevos valores
+
+### **Pausar Ejecución Automática**
+
+Para pausar la ejecución diaria:
+
+1. Ve a **Actions** → **"Descarga Diaria Automática"**
+2. Click en **"..."** → **"Disable workflow"**
+
+Para reactivar:
+
+1. Ve a **Actions** → **"Descarga Diaria Automática"**
+2. Click **"Enable workflow"**
+
+## 📞 **Soporte**
+
+### **Logs Detallados**
+- **GitHub Actions**: Logs completos de cada ejecución
+- **Supabase**: Logs de carga en el dashboard
+- **Artifacts**: Archivos de resultado descargables
+
+### **Monitoreo**
+- **Estado**: Ver en Actions tab
+- **Errores**: Notificaciones automáticas
+- **Resultados**: Artifacts con datos
+
+## 🎯 **Próximos Pasos**
+
+1. ✅ **Configurar secretos** en GitHub
+2. ✅ **Probar ejecución manual** con fecha específica
+3. ✅ **Verificar carga en Supabase**
+4. ✅ **Monitorear ejecución automática** diaria
+5. ✅ **Ajustar parámetros** según necesidades
 
 ---
 
-**¡Sistema listo para descarga masiva de sentencias! 🚀**
+**¡Sistema listo para descarga automática diaria! 🚀**
+
+*El sistema descargará automáticamente las sentencias del día anterior todos los días a las 6:00 AM y las cargará a Supabase sin intervención manual.*

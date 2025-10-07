@@ -1,0 +1,195 @@
+name: "Descarga Diaria Automática"
+
+on:
+  schedule:
+    # Ejecutar todos los días a las 6:00 AM (UTC-3 = 9:00 AM UTC)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      fecha_especifica:
+        description: 'Fecha específica a descargar (YYYY-MM-DD) - Dejar vacío para ayer'
+        required: false
+        type: string
+
+jobs:
+  descargar-sentencias-diarias:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60  # Timeout de 1 hora
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+          echo "📦 Dependencias instaladas"
+      
+      - name: Determinar fecha de descarga
+        id: fecha
+        run: |
+          if [ -n "${{ github.event.inputs.fecha_especifica }}" ]; then
+            echo "fecha=${{ github.event.inputs.fecha_especifica }}" >> $GITHUB_OUTPUT
+            echo "📅 Usando fecha específica: ${{ github.event.inputs.fecha_especifica }}"
+          else
+            # Calcular fecha de ayer (UTC-3)
+            FECHA_AYER=$(date -d "yesterday" +%Y-%m-%d)
+            echo "fecha=$FECHA_AYER" >> $GITHUB_OUTPUT
+            echo "📅 Descargando sentencias de ayer: $FECHA_AYER"
+          fi
+      
+      - name: Descargar sentencias del día
+        run: |
+          echo "📅 Descargando sentencias del día: ${{ steps.fecha.outputs.fecha }}"
+          python3 descargar_sentencias_api.py ${{ steps.fecha.outputs.fecha }} ${{ steps.fecha.outputs.fecha }}
+      
+      - name: Preparar archivos para Supabase
+        run: |
+          echo "🔄 Preparando archivos para ingesta en Supabase..."
+          python3 preparar_para_supabase.py output/descarga_api
+      
+      - name: Cargar a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "🚀 Cargando datos a Supabase..."
+          if [ -f "output/descarga_api/sentencias_para_supabase.json" ]; then
+            python3 cargar_a_supabase.py \
+              output/descarga_api/sentencias_para_supabase.json \
+              $SUPABASE_URL \
+              $SUPABASE_KEY
+            echo "✅ Datos cargados exitosamente a Supabase"
+          else
+            echo "❌ Archivo de sentencias no encontrado"
+            exit 1
+          fi
+      
+      - name: Crear resumen
+        run: |
+          echo "📊 Creando resumen de descarga..."
+          echo "Fecha: ${{ steps.fecha.outputs.fecha }}" > descarga_resumen.txt
+          echo "Timestamp: $(date)" >> descarga_resumen.txt
+          echo "Tipo: Descarga automática diaria" >> descarga_resumen.txt
+          echo "Cargado a Supabase: ✅ Sí" >> descarga_resumen.txt
+          echo "Archivos generados:" >> descarga_resumen.txt
+          find output/ -name "*.json" | wc -l >> descarga_resumen.txt
+          echo "Total de archivos JSON generados" >> descarga_resumen.txt
+          
+          echo "" >> descarga_resumen.txt
+          echo "=== ESTADÍSTICAS SUPABASE ===" >> descarga_resumen.txt
+          echo "✅ Datos cargados automáticamente" >> descarga_resumen.txt
+          echo "🔗 URL: ${{ secrets.SUPABASE_URL }}" >> descarga_resumen.txt
+          echo "📅 Próxima ejecución: Mañana a las 6:00 AM (UTC-3)" >> descarga_resumen.txt
+      
+      - name: Upload resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentencias-diarias-${{ steps.fecha.outputs.fecha }}
+          path: |
+            output/
+            descarga_resumen.txt
+          retention-days: 7  # Mantener solo 7 días
+      
+      - name: Mostrar resumen final
+        run: |
+          echo "✅ Descarga diaria completada para: ${{ steps.fecha.outputs.fecha }}"
+          echo "📁 Archivos generados:"
+          find output/ -name "*.json" | head -5
+          echo "..."
+          echo "📊 Total de archivos: $(find output/ -name "*.json" | wc -l)"
+          echo "🚀 Datos cargados automáticamente a Supabase"
+          echo "⏰ Próxima ejecución: Mañana a las 6:00 AM (UTC-3)"
+
+  # Job de retry en caso de fallo
+  retry-on-failure:
+    runs-on: ubuntu-latest
+    needs: descargar-sentencias-diarias
+    if: failure()
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+          echo "📦 Dependencias instaladas (retry)"
+      
+      - name: Determinar fecha de descarga (retry)
+        id: fecha_retry
+        run: |
+          if [ -n "${{ github.event.inputs.fecha_especifica }}" ]; then
+            echo "fecha=${{ github.event.inputs.fecha_especifica }}" >> $GITHUB_OUTPUT
+          else
+            FECHA_AYER=$(date -d "yesterday" +%Y-%m-%d)
+            echo "fecha=$FECHA_AYER" >> $GITHUB_OUTPUT
+          fi
+          echo "🔄 RETRY: Descargando sentencias del día: ${{ steps.fecha_retry.outputs.fecha }}"
+      
+      - name: Descargar sentencias (retry)
+        run: |
+          echo "🔄 RETRY: Descargando sentencias del día: ${{ steps.fecha_retry.outputs.fecha }}"
+          python3 descargar_sentencias_api.py ${{ steps.fecha_retry.outputs.fecha }} ${{ steps.fecha_retry.outputs.fecha }}
+      
+      - name: Preparar archivos para Supabase (retry)
+        run: |
+          echo "🔄 RETRY: Preparando archivos para ingesta en Supabase..."
+          python3 preparar_para_supabase.py output/descarga_api
+      
+      - name: Cargar a Supabase (retry)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "🔄 RETRY: Cargando datos a Supabase..."
+          if [ -f "output/descarga_api/sentencias_para_supabase.json" ]; then
+            python3 cargar_a_supabase.py \
+              output/descarga_api/sentencias_para_supabase.json \
+              $SUPABASE_URL \
+              $SUPABASE_KEY
+            echo "✅ RETRY: Datos cargados exitosamente a Supabase"
+          else
+            echo "❌ RETRY: Archivo de sentencias no encontrado"
+            exit 1
+          fi
+      
+      - name: Crear resumen (retry)
+        run: |
+          echo "📊 Creando resumen de descarga (RETRY)..."
+          echo "Fecha: ${{ steps.fecha_retry.outputs.fecha }}" > descarga_resumen_retry.txt
+          echo "Timestamp: $(date)" >> descarga_resumen_retry.txt
+          echo "Tipo: Descarga automática diaria (RETRY)" >> descarga_resumen_retry.txt
+          echo "Cargado a Supabase: ✅ Sí" >> descarga_resumen_retry.txt
+          echo "Archivos generados:" >> descarga_resumen_retry.txt
+          find output/ -name "*.json" | wc -l >> descarga_resumen_retry.txt
+          echo "Total de archivos JSON generados" >> descarga_resumen_retry.txt
+      
+      - name: Upload resultados (retry)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentencias-diarias-retry-${{ steps.fecha_retry.outputs.fecha }}
+          path: |
+            output/
+            descarga_resumen_retry.txt
+          retention-days: 7
+      
+      - name: Mostrar resumen final (retry)
+        run: |
+          echo "✅ RETRY: Descarga diaria completada para: ${{ steps.fecha_retry.outputs.fecha }}"
+          echo "📁 Archivos generados:"
+          find output/ -name "*.json" | head -5
+          echo "..."
+          echo "📊 Total de archivos: $(find output/ -name "*.json" | wc -l)"
+          echo "🚀 Datos cargados automáticamente a Supabase"
