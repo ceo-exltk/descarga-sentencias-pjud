@@ -34,48 +34,30 @@ def preparar_sentencias_para_supabase(input_dir):
         with open(archivo, 'r', encoding='utf-8') as f:
             sentencias = json.load(f)
         
-        # Las sentencias ya vienen en el formato correcto desde la API
-        # Solo necesitamos mapear algunos campos para Supabase
+        # Mapear campos de la API PJUD a la estructura de la tabla Supabase
         for sentencia in sentencias:
             sentencia_supabase = {
-                # Campos principales
-                'id_sentencia': sentencia.get('id'),
-                'rol_era_sup_s': sentencia.get('rol_era_sup_s'),
-                'rol_sup_i': sentencia.get('rol_sup_i'),
-                'era_sup_i': sentencia.get('era_sup_i'),
+                # Campos que coinciden con la tabla Supabase
+                'rol_numero': sentencia.get('rol_era_sup_s'),
+                'rol_completo': sentencia.get('rol_era_sup_s'),
+                'caratulado': sentencia.get('des_contenido_s', '')[:500] if sentencia.get('des_contenido_s') else '',  # Limitar longitud
+                'fecha_sentencia': sentencia.get('fec_sentencia_d', '').split('T')[0] if sentencia.get('fec_sentencia_d') else None,
+                'corte': sentencia.get('gls_corte_s'),
+                'sala': sentencia.get('gls_sala_sup_s'),
+                'resultado_recurso': sentencia.get('resultado_recurso_sup_s'),
+                'texto_completo': sentencia.get('des_contenido_s'),
                 
-                # Fechas
-                'fecha_sentencia': sentencia.get('fecha_sentencia_dt_s') or sentencia.get('fecha_sentencia'),
-                'fecha_ingreso': sentencia.get('fecha_ingreso_dt_s'),
+                # Campos adicionales disponibles
+                'url_acceso': f"https://juris.pjud.cl/sentencia/{sentencia.get('id')}" if sentencia.get('id') else None,
+                'condicion_publicacion': sentencia.get('gls_condicion_publicacion_s'),
                 
-                # Tribunal y sala
-                'gls_corte_s': sentencia.get('gls_corte_s'),
-                'gls_sala_sup_s': sentencia.get('gls_sala_sup_s'),
-                
-                # Tipo y resultado
-                'gls_tipo_recurso_s': sentencia.get('gls_tipo_recurso_s'),
-                'resultado_recurso_sup_s': sentencia.get('resultado_recurso_sup_s'),
-                
-                # Ministros y votos
-                'id_ministro_ss': sentencia.get('id_ministro_ss', []),
-                'id_voto_ss': sentencia.get('id_voto_ss', []),
-                'gls_voto_ministro_ss': sentencia.get('gls_voto_ministro_ss', []),
-                
-                # Condición y flags
-                'gls_condicion_publicacion_s': sentencia.get('gls_condicion_publicacion_s'),
-                'flg_confidencial_i': sentencia.get('flg_confidencial_i', 0),
-                'flg_reserva_i': sentencia.get('flg_reserva_i', 0),
-                
-                # Documento
-                'sent__crr_documento_i': sentencia.get('sent__crr_documento_i'),
-                
-                # Materias
-                'gls_materia_ss': sentencia.get('gls_materia_ss', []),
-                'gls_submateria_ss': sentencia.get('gls_submateria_ss', []),
+                # Arrays si están disponibles
+                'ministros': sentencia.get('id_ministro_ss', []) if isinstance(sentencia.get('id_ministro_ss'), list) else [],
+                'materias': sentencia.get('gls_materia_ss', []) if isinstance(sentencia.get('gls_materia_ss'), list) else [],
+                'normas': sentencia.get('gls_norma_ss', []) if isinstance(sentencia.get('gls_norma_ss'), list) else [],
                 
                 # Metadata
-                'corte': sentencia.get('gls_corte_s'),
-                'fecha_descarga': datetime.now().isoformat()
+                'fecha_actualizacion': datetime.now().date().isoformat()
             }
             
             todas_sentencias.append(sentencia_supabase)

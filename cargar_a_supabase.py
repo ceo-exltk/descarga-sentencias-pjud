@@ -50,11 +50,8 @@ def cargar_sentencias_a_supabase(archivo_sentencias, supabase_url, supabase_key)
         batch_num = (i // batch_size) + 1
         
         try:
-            # Insertar o actualizar (upsert)
-            response = supabase.table('sentencias').upsert(
-                batch,
-                on_conflict='id_sentencia'
-            ).execute()
+            # Insertar sentencias
+            response = supabase.table('sentencias').insert(batch).execute()
             
             total_cargadas += len(batch)
             print(f"   ✅ Lote {batch_num}: {len(batch)} sentencias cargadas ({total_cargadas}/{len(sentencias)})")
